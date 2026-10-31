@@ -1,0 +1,1613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEONBITES | Evening Feast & Refreshment Kiosk (MYR)</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              gold: '#FFC72C',
+              crimson: '#DA291C',
+              neonCyan: '#00F0FF',
+              neonGreen: '#10B981',
+              neonPurple: '#A855F7',
+              darkBg: '#06090E'
+            }
+          },
+          boxShadow: {
+            'neon-gold': '0 0 25px -4px rgba(255, 199, 44, 0.45)',
+            'neon-cyan': '0 0 25px -4px rgba(0, 240, 255, 0.45)',
+            'neon-crimson': '0 0 25px -4px rgba(218, 41, 28, 0.45)',
+            'neon-purple': '0 0 25px -4px rgba(168, 85, 247, 0.45)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Specular Frosted Glassmorphism */
+    .glass-panel {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.015) 100%), rgba(11, 17, 30, 0.75);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.35), 0 16px 36px -8px rgba(0, 0, 0, 0.7);
+    }
+    
+    .glass-card {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%), rgba(16, 23, 40, 0.6);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.2), 0 8px 24px -4px rgba(0, 0, 0, 0.5);
+      transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .glass-card:hover:not(.locked-card) {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.12) 0%, rgba(0, 240, 255, 0.05) 100%), rgba(20, 30, 52, 0.75);
+      border-color: rgba(0, 240, 255, 0.45);
+      transform: translateY(-4px);
+      box-shadow: inset 0 1px 2px 0 rgba(255, 255, 255, 0.5), 0 16px 32px -4px rgba(0, 240, 255, 0.25);
+    }
+
+    .locked-card {
+      background: rgba(10, 14, 22, 0.9) !important;
+      border-color: rgba(239, 68, 68, 0.25) !important;
+      filter: grayscale(45%);
+    }
+
+    .voucher-card {
+      background: radial-gradient(circle at top right, rgba(255, 199, 44, 0.15), transparent 60%), rgba(15, 23, 42, 0.85);
+      border: 1px dashed rgba(255, 199, 44, 0.4);
+      position: relative;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.18); border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(0, 240, 255, 0.5); }
+  </style>
+</head>
+<body class="bg-brand-darkBg text-slate-100 min-h-screen relative overflow-x-hidden selection:bg-brand-gold selection:text-black font-sans">
+
+  <!-- Ambient Light Orbs -->
+  <div class="fixed top-[-10%] left-[-10%] w-[550px] h-[550px] rounded-full bg-brand-neonCyan/15 blur-[160px] pointer-events-none -z-10 animate-pulse"></div>
+  <div class="fixed bottom-[-10%] right-[-5%] w-[650px] h-[650px] rounded-full bg-brand-crimson/15 blur-[180px] pointer-events-none -z-10"></div>
+  <div class="fixed top-[40%] right-[20%] w-[450px] h-[450px] rounded-full bg-brand-gold/10 blur-[150px] pointer-events-none -z-10"></div>
+
+  <!-- ================= TOP NAVIGATION ================= -->
+  <header class="sticky top-0 z-40 glass-panel border-b border-white/10 px-4 lg:px-8 py-3">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-3">
+      
+      <!-- Brand & Malaysian Status -->
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-crimson via-brand-gold to-brand-neonCyan flex items-center justify-center font-black text-xl text-black shadow-lg shadow-brand-gold/30">
+            ⚡
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="font-black tracking-wider text-xl bg-gradient-to-r from-brand-gold via-yellow-100 to-brand-neonCyan bg-clip-text text-transparent">NEONBITES</h1>
+              <span class="text-[10px] tracking-widest px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-400/30 text-emerald-300 font-mono font-bold">MYR (RM)</span>
+              <span id="shiftBadge" class="text-[10px] tracking-wider px-2.5 py-0.5 rounded-full font-mono uppercase font-bold border border-brand-neonCyan/40 bg-brand-neonCyan/15 text-brand-neonCyan shadow-neon-cyan">
+                🌙 Evening Feast (Open Now)
+              </span>
+            </div>
+            <p class="text-[11px] text-slate-400 hidden sm:block">Weekend Refreshment • Rapid Griddle & Courier Dispatch</p>
+          </div>
+        </div>
+
+        <!-- Mobile Buttons -->
+        <div class="flex md:hidden items-center gap-2">
+          <button onclick="toggleVoucherModal()" class="px-2.5 py-1.5 rounded-xl glass-card text-brand-gold text-xs font-bold flex items-center gap-1">
+            <span>🎟️</span>
+          </button>
+          <button onclick="toggleMemberModal()" class="px-2.5 py-1.5 rounded-xl glass-card text-brand-neonCyan text-xs font-bold flex items-center gap-1">
+            <span>VIP</span>
+          </button>
+          <button onclick="toggleCartDrawer(true)" class="relative p-2 rounded-xl glass-card text-slate-100">
+            🛍️ <span id="cartBadgeMob" class="text-xs font-bold text-brand-gold">0</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Controls & Shift Switchers -->
+      <div class="flex items-center flex-wrap gap-2.5">
+        
+        <!-- Live Clock & Shift Selector -->
+        <div class="flex items-center bg-black/50 p-1 rounded-2xl border border-white/10 text-xs">
+          <span class="text-[10px] uppercase font-bold text-slate-400 px-2 flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-brand-neonCyan animate-ping"></span>
+            <span id="liveClockDisplay" class="font-mono text-white">07:45 PM</span>
+          </span>
+          <button onclick="setShiftMode('afternoon')" id="shiftBtnAfternoon" class="px-3 py-1.5 rounded-xl font-bold text-[11px] bg-brand-neonCyan text-black shadow-md transition">🌙 Evening Feast</button>
+          <button onclick="setShiftMode('morning')" id="shiftBtnMorning" class="px-3 py-1.5 rounded-xl font-bold text-[11px] text-slate-400 hover:text-white transition">☀️ Breakfast (Locked)</button>
+        </div>
+
+        <!-- VOUCHER VAULT BUTTON -->
+        <button onclick="toggleVoucherModal()" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full glass-card border border-brand-gold/40 text-brand-gold hover:bg-brand-gold/10 text-xs font-bold transition shadow-neon-gold">
+          <span>🎟️</span>
+          <span>Vouchers</span>
+          <span id="appliedVoucherTag" class="hidden px-2 py-0.2 rounded-full bg-brand-gold text-black text-[9px] font-black">1 ACTIVE</span>
+        </button>
+
+        <!-- MEMBERSHIP SUBSCRIPTION QR BUTTON -->
+        <button onclick="toggleMemberModal()" class="flex items-center gap-2 px-3.5 py-1.5 rounded-full glass-card border border-brand-neonCyan/40 text-brand-neonCyan hover:bg-brand-neonCyan/10 text-xs font-bold transition shadow-neon-cyan">
+          <span>👑</span>
+          <span id="navSubscriptionStatus">VIP Gold Member</span>
+          <span id="navMemberPoints" class="px-2 py-0.5 rounded-full bg-brand-neonCyan/20 text-[10px] font-mono">1,250 pts</span>
+        </button>
+
+        <!-- QuickBot AI Button -->
+        <button onclick="toggleAIAssistant()" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full glass-card border border-purple-500/40 text-purple-300 hover:bg-purple-500/10 text-xs font-semibold transition shadow-neon-purple">
+          <span class="animate-bounce">🤖</span>
+          <span>QuickBot AI</span>
+        </button>
+
+        <!-- Order Tracker Floating Pill -->
+        <button id="trackerHeaderBtn" onclick="toggleTrackerModal(true)" class="hidden items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-400/40 text-emerald-300 text-xs font-semibold hover:bg-emerald-500/25 transition">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>Order: <strong id="headerTrackerStage">Kitchen Grill</strong></span>
+        </button>
+
+        <!-- Desktop Cart Trigger -->
+        <button onclick="toggleCartDrawer(true)" class="hidden md:flex relative p-2.5 rounded-2xl glass-card text-slate-100 hover:border-brand-gold/60 transition group">
+          <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+          </svg>
+          <span id="cartCountBadge" class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-brand-crimson text-white text-[11px] font-bold flex items-center justify-center border-2 border-[#06090E] scale-0 transition-transform">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= SUB-HEADER WORKFLOW STATUS ================= -->
+  <div class="bg-black/40 border-b border-white/10 px-4 py-2 overflow-x-auto scrollbar-none">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4 text-xs">
+      <div class="flex items-center gap-2 whitespace-nowrap">
+        <span class="w-5 h-5 rounded-full bg-brand-neonCyan text-black font-extrabold flex items-center justify-center text-[10px]">1</span>
+        <span class="font-bold text-white">Select Regular Feast Meals</span>
+      </div>
+      <div class="h-px w-6 bg-white/20 hidden sm:block"></div>
+      <div class="flex items-center gap-2 whitespace-nowrap text-slate-400">
+        <span class="w-5 h-5 rounded-full bg-white/10 text-white font-bold flex items-center justify-center text-[10px]">2</span>
+        <span>Drinks & Sides Customizer</span>
+      </div>
+      <div class="h-px w-6 bg-white/20 hidden sm:block"></div>
+      <div class="flex items-center gap-2 whitespace-nowrap text-brand-gold">
+        <span class="w-5 h-5 rounded-full bg-brand-gold/20 text-brand-gold font-bold flex items-center justify-center text-[10px] border border-brand-gold/40">🎟️</span>
+        <span class="font-semibold">Vouchers & VIP Perks</span>
+      </div>
+      <div class="h-px w-6 bg-white/20 hidden sm:block"></div>
+      <div class="flex items-center gap-2 whitespace-nowrap text-slate-400">
+        <span class="w-5 h-5 rounded-full bg-white/10 text-white font-bold flex items-center justify-center text-[10px]">4</span>
+        <span>Live Kitchen & Delivery Simulator</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MAIN CONTENT ================= -->
+  <main class="max-w-7xl mx-auto px-4 lg:px-8 py-6 pb-32">
+
+    <!-- HERO PROMO: EVENING FEAST ACTIVE -->
+    <section id="heroCard" class="glass-panel rounded-3xl p-6 sm:p-8 mb-8 relative overflow-hidden border border-white/15">
+      <div id="heroEmoji" class="absolute -right-6 -bottom-8 opacity-15 pointer-events-none text-9xl">🍔</div>
+      <div class="relative z-10 max-w-2xl">
+        <div id="heroTag" class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-neonCyan/20 border border-brand-neonCyan/40 text-brand-neonCyan font-mono text-xs uppercase font-bold tracking-wider mb-3">
+          🌙 Evening Feast Active (11:00 AM - 4:00 AM) • Fresh From Grill
+        </div>
+        <h2 id="heroTitle" class="text-3xl sm:text-4xl font-black tracking-tight text-white mb-2 leading-tight">
+          Tonight's Sizzling Feast! <br/>
+          <span class="bg-gradient-to-r from-brand-neonCyan via-teal-100 to-brand-gold bg-clip-text text-transparent">Super Value Meals, Ayam Goreng & McFlurrys.</span>
+        </h2>
+        <p id="heroDesc" class="text-slate-300 text-sm mb-6 leading-relaxed">
+          The evening griddle is sizzling at full capacity! Savor Big Macs, 3pc Ayam Goreng Feasts, Milo Dinosaurs, and McFlurry treats. Breakfast counter is locked until tomorrow morning at 4:00 AM.
+        </p>
+
+        <div id="heroQuickButtons" class="flex flex-wrap gap-3">
+          <button onclick="openCustomizer(1)" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-neonCyan to-teal-400 text-black font-extrabold text-xs shadow-lg shadow-brand-neonCyan/30 hover:brightness-110 active:scale-95 transition flex items-center gap-2">
+            <span>🍔 Order Big Mac® Combo (RM 17.50)</span>
+          </button>
+          <button onclick="openCustomizer(8)" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-gold to-amber-500 text-black font-extrabold text-xs shadow-lg shadow-brand-gold/30 hover:brightness-110 active:scale-95 transition flex items-center gap-2">
+            <span>🍗 Ayam Goreng McD™ (RM 17.95)</span>
+          </button>
+          <button onclick="toggleVoucherModal()" class="px-4 py-2.5 rounded-xl glass-card text-brand-gold hover:border-brand-gold/50 font-semibold text-xs transition flex items-center gap-1.5">
+            <span>🎟️ Claim Voucher</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- CATEGORY TABS & SEARCH -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+      <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none w-full" id="categoryNavTabs"></div>
+      
+      <div class="relative w-full md:w-72 shrink-0">
+        <input 
+          type="text" 
+          id="menuSearchInput" 
+          oninput="handleSearch(this.value)" 
+          placeholder="Search burgers, feasts, desserts..." 
+          class="w-full glass-card rounded-2xl px-4 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-brand-neonCyan border border-white/15" 
+        />
+        <span class="absolute right-3.5 top-3 text-slate-400 text-xs">🔍</span>
+      </div>
+    </div>
+
+    <!-- PRODUCT CATALOG GRID -->
+    <div id="productCatalogGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"></div>
+  </main>
+
+  <!-- ================= VOUCHER & PROMO VAULT MODAL ================= -->
+  <div id="voucherModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="glass-panel w-full max-w-xl rounded-3xl p-6 sm:p-7 border border-brand-gold/30 relative shadow-2xl max-h-[90vh] overflow-y-auto">
+      <button onclick="toggleVoucherModal()" class="absolute right-4 top-4 text-slate-400 hover:text-white text-lg">✕</button>
+
+      <div class="flex items-center gap-3 pb-4 mb-5 border-b border-white/10">
+        <div class="w-10 h-10 rounded-2xl bg-brand-gold/20 border border-brand-gold/40 text-brand-gold flex items-center justify-center text-xl shadow-neon-gold">
+          🎟️
+        </div>
+        <div>
+          <h3 class="text-lg font-black text-white">Voucher Vault & Instant Coupons</h3>
+          <p class="text-xs text-slate-400">Apply instant discounts to your evening feast order</p>
+        </div>
+      </div>
+
+      <!-- Quick Apply Code Input -->
+      <div class="glass-card p-3.5 rounded-2xl border border-white/10 mb-6 flex gap-2">
+        <input type="text" id="manualVoucherInput" placeholder="Enter coupon code (e.g. FEAST5)..." class="flex-1 bg-black/40 border border-white/15 rounded-xl px-3.5 py-2 text-xs text-white uppercase placeholder-slate-500 focus:outline-none focus:border-brand-gold font-mono" />
+        <button onclick="applyManualVoucher()" class="px-4 py-2 rounded-xl bg-brand-gold text-black font-bold text-xs hover:brightness-110 active:scale-95 transition">
+          Apply
+        </button>
+      </div>
+
+      <!-- Available Vouchers List -->
+      <div class="space-y-3" id="voucherListContainer"></div>
+
+      <div class="pt-5 mt-6 border-t border-white/10 flex justify-between items-center text-xs text-slate-400">
+        <span>Vouchers can be stacked with VIP subscription discounts!</span>
+        <button onclick="toggleVoucherModal()" class="px-4 py-2 rounded-xl glass-card text-white hover:border-brand-gold">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= VIP SUBSCRIPTION & QR PASS MODAL ================= -->
+  <div id="memberModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="glass-panel w-full max-w-xl rounded-3xl p-6 sm:p-8 border border-brand-neonCyan/30 relative shadow-2xl max-h-[92vh] overflow-y-auto">
+      <button onclick="toggleMemberModal()" class="absolute right-4 top-4 text-slate-400 hover:text-white text-lg">✕</button>
+
+      <!-- Tabs: VIP QR Pass vs Subscription Plans -->
+      <div class="flex gap-2 border-b border-white/10 pb-4 mb-6 text-xs font-bold">
+        <button onclick="switchSubTab('qr')" id="subTabBtnQr" class="px-4 py-2 rounded-xl bg-brand-neonCyan text-black transition shadow-neon-cyan">
+          👑 Digital Subscription Pass & QR
+        </button>
+        <button onclick="switchSubTab('plans')" id="subTabBtnPlans" class="px-4 py-2 rounded-xl text-slate-300 hover:text-white transition">
+          💎 Subscription Plans & Upgrades
+        </button>
+      </div>
+
+      <!-- Tab 1: Dynamic Subscription QR Pass -->
+      <div id="subContentQr">
+        <div class="bg-gradient-to-tr from-slate-950 via-slate-900 to-indigo-950 border border-brand-neonCyan/40 rounded-3xl p-6 relative overflow-hidden shadow-neon-cyan mb-6">
+          <div class="absolute -right-10 -top-10 w-40 h-40 rounded-full bg-brand-neonCyan/15 blur-3xl pointer-events-none"></div>
+
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-2.5">
+              <span class="text-3xl">👑</span>
+              <div>
+                <h4 class="font-black text-sm text-white tracking-widest uppercase">NEONBITES VIP CYBER PASS</h4>
+                <p class="text-[11px] text-brand-neonCyan font-mono" id="passTierBadge">Tier: Cyber Gold Pass Subscriber</p>
+              </div>
+            </div>
+            <span class="text-[11px] bg-emerald-500/20 text-emerald-300 px-3 py-1 rounded-full border border-emerald-400/40 font-mono font-bold flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Active Subscription
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 items-center pt-1">
+            <div>
+              <p class="text-[10px] text-slate-400 uppercase font-mono">Subscriber Holder</p>
+              <h3 class="text-lg font-black text-white">Alex Wong (MY)</h3>
+              <p class="text-[11px] text-slate-400 font-mono">Pass Token: <span id="passTokenDisplay" class="text-slate-200">#VIP-SUB-8829-GOLD</span></p>
+
+              <div class="mt-4">
+                <p class="text-[10px] text-slate-400 uppercase font-mono">Auto-Renewing Perks</p>
+                <div class="space-y-1 mt-1 text-xs text-slate-300">
+                  <div class="flex items-center gap-1.5 text-emerald-300">
+                    <span>✓</span><span>15% Flat Discount On All Feasts</span>
+                  </div>
+                  <div class="flex items-center gap-1.5 text-emerald-300">
+                    <span>✓</span><span>Free Weekly McFlurry / Milo Dino</span>
+                  </div>
+                  <div class="flex items-center gap-1.5 text-brand-gold">
+                    <span>⭐</span><span>2x NeonPoints Acceleration</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-4 pt-3 border-t border-white/10 flex items-baseline gap-1.5">
+                <span class="text-2xl font-black font-mono text-brand-gold" id="passPointsCount">1,250</span>
+                <span class="text-xs text-slate-400 font-mono">accumulated pts</span>
+              </div>
+            </div>
+
+            <!-- Enhanced High-Detail Subscription QR Code -->
+            <div class="flex flex-col items-center justify-center bg-white p-4 rounded-2xl shadow-inner text-black">
+              <svg id="vipQrSvg" class="w-36 h-36" viewBox="0 0 120 120" fill="currentColor">
+                <!-- QR Position Detection Patterns -->
+                <rect x="5" y="5" width="35" height="35" rx="5" fill="#080B11"/>
+                <rect x="12" y="12" width="21" height="21" rx="2" fill="#fff"/>
+                <rect x="17" y="17" width="11" height="11" rx="2" fill="#00F0FF"/>
+
+                <rect x="80" y="5" width="35" height="35" rx="5" fill="#080B11"/>
+                <rect x="87" y="12" width="21" height="21" rx="2" fill="#fff"/>
+                <rect x="92" y="17" width="11" height="11" rx="2" fill="#00F0FF"/>
+
+                <rect x="5" y="80" width="35" height="35" rx="5" fill="#080B11"/>
+                <rect x="12" y="87" width="21" height="21" rx="2" fill="#fff"/>
+                <rect x="17" y="92" width="11" height="11" rx="2" fill="#00F0FF"/>
+
+                <!-- QR Data Matrix Modules -->
+                <rect x="46" y="8" width="8" height="8" fill="#080B11"/>
+                <rect x="58" y="12" width="12" height="8" fill="#DA291C"/>
+                <rect x="74" y="6" width="4" height="10" fill="#080B11"/>
+
+                <rect x="8" y="46" width="10" height="8" fill="#080B11"/>
+                <rect x="22" y="44" width="8" height="12" fill="#080B11"/>
+                <rect x="36" y="46" width="6" height="8" fill="#080B11"/>
+                
+                <!-- Center Cyber Core Logo -->
+                <rect x="48" y="48" width="24" height="24" rx="4" fill="#080B11"/>
+                <circle cx="60" cy="60" r="8" fill="#FFC72C"/>
+                <path d="M60 54 L64 60 L60 66 L56 60 Z" fill="#080B11"/>
+
+                <rect x="78" y="46" width="8" height="8" fill="#080B11"/>
+                <rect x="92" y="44" width="14" height="8" fill="#080B11"/>
+                <rect x="110" y="46" width="6" height="10" fill="#080B11"/>
+
+                <rect x="46" y="78" width="10" height="10" fill="#080B11"/>
+                <rect x="62" y="76" width="14" height="8" fill="#080B11"/>
+                <rect x="80" y="82" width="8" height="14" fill="#DA291C"/>
+                <rect x="94" y="80" width="12" height="8" fill="#080B11"/>
+                <rect x="110" y="84" width="6" height="10" fill="#080B11"/>
+
+                <rect x="46" y="94" width="14" height="8" fill="#080B11"/>
+                <rect x="66" y="98" width="12" height="8" fill="#080B11"/>
+                <rect x="84" y="102" width="10" height="10" fill="#080B11"/>
+                <rect x="100" y="96" width="14" height="14" fill="#080B11"/>
+              </svg>
+              <button onclick="scanSubscriberQrAtKiosk()" class="mt-2 text-[10px] font-mono font-bold bg-slate-900 text-white px-3 py-1.5 rounded-lg hover:bg-black transition active:scale-95 flex items-center gap-1.5">
+                <span>📲 Scan Pass At Kiosk (+100 pts)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <p class="text-xs text-center text-slate-400">
+          Scan this dynamic QR at any NEONBITES Express Counter or Drive-Thru for instant VIP detection and automatic subscriber rate application.
+        </p>
+      </div>
+
+      <!-- Tab 2: Subscription Plans Selector -->
+      <div id="subContentPlans" class="hidden space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          
+          <!-- Plan A -->
+          <div class="glass-card p-4 rounded-2xl border border-white/10 hover:border-brand-gold transition flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-black text-brand-gold">NEON GOLD VIP</span>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-brand-gold/20 text-brand-gold">Current Plan</span>
+              </div>
+              <div class="text-xl font-black text-white font-mono">RM 9.90<span class="text-xs font-normal text-slate-400"> / month</span></div>
+              <ul class="text-[11px] text-slate-300 space-y-1.5 mt-3">
+                <li>• 15% Off all evening combos</li>
+                <li>• 1x Free Weekly Milo Dinosaur</li>
+                <li>• Zero priority queue wait time</li>
+              </ul>
+            </div>
+            <button onclick="activatePlan('Gold VIP', 9.90)" class="mt-4 w-full py-2 rounded-xl bg-brand-gold text-black font-bold text-xs hover:brightness-110">
+              Active Plan (Auto-Renews)
+            </button>
+          </div>
+
+          <!-- Plan B -->
+          <div class="glass-card p-4 rounded-2xl border border-brand-neonCyan/40 shadow-neon-cyan flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-black text-brand-neonCyan">CYBER PLATINUM UNLIMITED</span>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-brand-neonCyan/20 text-brand-neonCyan">Top Value</span>
+              </div>
+              <div class="text-xl font-black text-white font-mono">RM 19.90<span class="text-xs font-normal text-slate-400"> / month</span></div>
+              <ul class="text-[11px] text-slate-300 space-y-1.5 mt-3">
+                <li>• 25% Off entire menu & party boxes</li>
+                <li>• Unlimited Free Drinks refills & upsizes</li>
+                <li>• Free delivery on all night orders</li>
+              </ul>
+            </div>
+            <button onclick="activatePlan('Cyber Platinum', 19.90)" class="mt-4 w-full py-2 rounded-xl bg-gradient-to-r from-brand-neonCyan to-teal-400 text-black font-black text-xs hover:brightness-110 active:scale-95 transition">
+              Upgrade to Platinum
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= STEP-BY-STEP CUSTOMIZER MODAL ================= -->
+  <div id="customizerModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="glass-panel w-full max-w-xl rounded-3xl p-6 sm:p-7 border border-white/20 relative max-h-[92vh] overflow-y-auto">
+      <button onclick="closeCustomizerModal()" class="absolute right-4 top-4 text-slate-400 hover:text-white text-lg">✕</button>
+
+      <div class="flex items-center justify-between pb-4 mb-4 border-b border-white/10 text-xs">
+        <div>
+          <span class="text-[10px] font-mono text-brand-neonCyan font-bold uppercase tracking-wider">Step 2: Combo & Upgrade Options</span>
+          <h3 id="custTitle" class="text-lg font-black text-white">Item Name</h3>
+        </div>
+        <div class="text-right">
+          <span class="text-[10px] text-slate-400 font-mono">Running Price</span>
+          <div id="custRunningPrice" class="text-lg font-black font-mono text-brand-neonCyan">RM 0.00</div>
+        </div>
+      </div>
+
+      <div class="space-y-5">
+        <!-- Meal Type Choice -->
+        <div class="glass-card p-4 rounded-2xl border border-white/10">
+          <label class="block text-xs font-bold text-white mb-2.5">Choose Meal Format</label>
+          <div class="grid grid-cols-2 gap-3">
+            <button type="button" onclick="setCustomizerMealType('combo')" id="custBtnCombo" class="p-3 rounded-xl border border-brand-neonCyan bg-brand-neonCyan/20 text-left transition">
+              <span class="text-xs font-extrabold text-white block">🍟 Value Combo Meal</span>
+              <span class="text-[11px] text-brand-neonCyan font-mono block mt-1">+ Drink & Golden Fries</span>
+              <span class="text-[10px] text-emerald-400 font-semibold mt-1 block">Full Evening Feast Pack</span>
+            </button>
+            <button type="button" onclick="setCustomizerMealType('alacarte')" id="custBtnAlaCarte" class="p-3 rounded-xl border border-white/10 text-left transition hover:border-white/30">
+              <span class="text-xs font-extrabold text-white block">🍔 Ala Carte Only</span>
+              <span class="text-[11px] text-slate-400 font-mono block mt-1">Single Item Only</span>
+              <span class="text-[10px] text-slate-400 font-semibold mt-1 block">Save RM 4.50</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Drink or Refreshment Upgrade -->
+        <div class="glass-card p-4 rounded-2xl border border-white/10">
+          <div class="flex items-center justify-between mb-2.5">
+            <label class="text-xs font-bold text-white">Choose Refreshment Drink / Dessert</label>
+            <span class="text-[10px] text-brand-gold font-mono uppercase">1 Included with combo</span>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="custDrinkContainer"></div>
+        </div>
+
+        <!-- Add-ons Selection -->
+        <div class="glass-card p-4 rounded-2xl border border-white/10">
+          <div class="flex items-center justify-between mb-2.5">
+            <label class="text-xs font-bold text-white">Add-on Evening Bites</label>
+            <span class="text-[10px] text-slate-400 font-mono">Optional Treats</span>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="custAddonContainer"></div>
+        </div>
+      </div>
+
+      <div class="pt-5 mt-5 border-t border-white/10 flex items-center justify-between gap-4">
+        <button onclick="closeCustomizerModal()" class="px-4 py-3 rounded-xl glass-card text-xs text-slate-300 hover:text-white">
+          Cancel
+        </button>
+        <button onclick="commitCustomizedItem()" class="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-brand-neonCyan to-teal-400 text-black font-black text-xs uppercase tracking-wider shadow-lg shadow-brand-neonCyan/30 hover:brightness-110 active:scale-95 transition flex items-center justify-center gap-2">
+          <span>Add to Tray & Proceed</span>
+          <span id="custCommitPrice" class="bg-black/20 px-2 py-0.5 rounded font-mono">RM 0.00</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= TRAY / CART DRAWER ================= -->
+  <div id="cartDrawer" class="fixed inset-y-0 right-0 w-full sm:w-[420px] z-50 glass-panel border-l border-white/15 transform translate-x-full transition-transform duration-300 ease-out flex flex-col shadow-2xl">
+    <div class="p-4 border-b border-white/10 flex items-center justify-between bg-black/40">
+      <div class="flex items-center gap-2">
+        <span class="text-xl">🛍️</span>
+        <div>
+          <h3 class="font-bold text-sm text-white">Your Tray Summary</h3>
+          <span id="trayItemCount" class="text-[11px] text-brand-neonCyan font-mono">0 items</span>
+        </div>
+      </div>
+      <button onclick="toggleCartDrawer(false)" class="text-slate-400 hover:text-white text-lg">✕</button>
+    </div>
+
+    <!-- Active Subscription Perks Pill in Cart -->
+    <div class="p-3 bg-brand-neonCyan/10 border-b border-brand-neonCyan/20 flex items-center justify-between text-xs">
+      <div class="flex items-center gap-2">
+        <span class="text-lg">👑</span>
+        <div>
+          <span class="text-white font-bold block" id="cartMemberTag">Alex Wong (VIP Pass)</span>
+          <span class="text-[10px] text-brand-neonCyan font-mono">Subscriber Perk: -15% Discount Active</span>
+        </div>
+      </div>
+      <button onclick="toggleMemberModal()" class="px-2.5 py-1 rounded-lg glass-card text-[11px] text-brand-neonCyan font-bold">
+        Pass QR
+      </button>
+    </div>
+
+    <!-- Applied Voucher Banner -->
+    <div id="cartAppliedVoucherRow" class="hidden p-2.5 bg-brand-gold/15 border-b border-brand-gold/30 flex items-center justify-between text-xs px-4">
+      <div class="flex items-center gap-1.5 text-brand-gold font-bold">
+        <span>🎟️</span>
+        <span id="cartAppliedVoucherLabel">Coupon: FEAST5</span>
+      </div>
+      <button onclick="removeAppliedVoucher()" class="text-red-400 hover:text-red-300 text-[11px] font-mono">Remove</button>
+    </div>
+
+    <!-- Items List -->
+    <div id="cartItemsList" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
+
+    <!-- Cart Footer & Billing Trigger -->
+    <div class="p-4 border-t border-white/10 bg-black/40 space-y-3">
+      
+      <!-- Quick Voucher Input in Cart -->
+      <div class="flex gap-2">
+        <input type="text" id="cartVoucherInput" placeholder="Voucher / Promo Code..." class="flex-1 bg-black/40 border border-white/15 rounded-xl px-3 py-1.5 text-xs text-white uppercase placeholder-slate-500 focus:outline-none focus:border-brand-gold font-mono" />
+        <button onclick="applyVoucherFromCart()" class="px-3 py-1.5 rounded-xl bg-brand-gold text-black font-bold text-xs hover:brightness-110">Apply</button>
+      </div>
+
+      <div class="space-y-1.5 text-xs text-slate-400 pt-1">
+        <div class="flex justify-between"><span>Subtotal</span><span id="cartSubtotal" class="font-mono text-white">RM 0.00</span></div>
+        <div id="cartVoucherDiscountLine" class="hidden flex justify-between text-brand-gold font-bold">
+          <span>Coupon Discount</span><span id="cartVoucherDiscountVal" class="font-mono">-RM 0.00</span>
+        </div>
+        <div class="flex justify-between text-brand-neonCyan font-semibold">
+          <span>VIP Subscriber (15% Off)</span><span id="cartSubDiscountVal" class="font-mono">-RM 0.00</span>
+        </div>
+        <div class="flex justify-between"><span>SST Service Tax (6%)</span><span id="cartTax" class="font-mono text-white">RM 0.00</span></div>
+        <div class="flex justify-between text-sm font-bold text-white pt-2 border-t border-white/10">
+          <span>Grand Total (MYR)</span><span id="cartGrandTotal" class="font-mono text-brand-neonCyan text-base">RM 0.00</span>
+        </div>
+      </div>
+      
+      <button onclick="openCheckoutModal()" id="checkoutBtn" disabled class="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-neonCyan to-teal-400 text-black font-black text-xs uppercase tracking-wider shadow-lg shadow-brand-neonCyan/30 hover:brightness-110 active:scale-95 transition disabled:opacity-40 disabled:cursor-not-allowed">
+        Proceed to Billing & Express Pay ⚡
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= PAYMENT / BILLING MODAL ================= -->
+  <div id="checkoutModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="glass-panel w-full max-w-md rounded-3xl p-6 border border-white/20 relative shadow-2xl">
+      <button onclick="closeCheckoutModal()" class="absolute right-4 top-4 text-slate-400 hover:text-white text-lg">✕</button>
+
+      <div class="text-center mb-4">
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold uppercase tracking-wider mb-2">
+          <span>Step 3</span> • <span>💳 Express Payment</span>
+        </div>
+        <h3 class="font-extrabold text-lg text-white">Select Malaysian Payment</h3>
+        <p class="text-xs text-slate-400">Scan QR or tap your preferred digital gateway</p>
+      </div>
+
+      <div class="bg-black/40 rounded-2xl p-3.5 border border-white/10 mb-4 space-y-1.5 text-xs">
+        <div class="flex justify-between text-slate-400"><span>VIP Points Reward</span><span id="modalPtsEarn" class="text-brand-neonCyan font-bold">+250 pts</span></div>
+        <div class="flex justify-between text-sm font-bold text-white pt-1 border-t border-white/10"><span>Amount Payable (MYR)</span><span id="modalPayTotal" class="font-mono text-brand-gold text-lg">RM 0.00</span></div>
+      </div>
+
+      <div class="space-y-2.5">
+        <button onclick="executePayment('DuitNow QR Pay')" class="w-full py-3 rounded-xl bg-gradient-to-r from-pink-600 to-rose-600 hover:opacity-95 text-white font-bold text-xs transition flex items-center justify-center gap-2 shadow-lg">
+          <span>📲 DuitNow QR (Instant Scan & Pay)</span>
+        </button>
+        <button onclick="executePayment('Touch \'n Go eWallet')" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition flex items-center justify-center gap-2">
+          <span>💳 Touch 'n Go eWallet</span>
+        </button>
+        <button onclick="executePayment('GrabPay')" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition flex items-center justify-center gap-2">
+          <span>🟢 GrabPay Wallet</span>
+        </button>
+        <button onclick="executePayment('FPX Online Banking')" class="w-full py-3 rounded-xl bg-amber-400 hover:bg-amber-500 text-black font-bold text-xs transition flex items-center justify-center gap-2">
+          <span>🏦 FPX (Maybank2u, CIMB, Public Bank)</span>
+        </button>
+        <button onclick="executePayment('Credit / Debit Card')" class="w-full py-3 rounded-xl glass-card border border-white/20 text-white font-bold text-xs hover:border-brand-neonCyan transition flex items-center justify-center gap-2">
+          <span>💳 Visa / Mastercard / Apple Pay</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= REAL-TIME ORDER TRACKER SIMULATOR ================= -->
+  <div id="trackerModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="glass-panel w-full max-w-xl rounded-3xl p-6 sm:p-8 border border-white/20 relative shadow-2xl">
+      <div class="flex items-center justify-between pb-4 border-b border-white/10">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-brand-neonCyan animate-ping"></span>
+            <h3 class="text-lg font-black text-white">Evening Feast Kitchen Simulator</h3>
+          </div>
+          <p class="text-xs text-slate-400 font-mono">Order ID: <span id="trackerOrderId" class="text-brand-neonCyan font-bold">#EV-9821</span></p>
+        </div>
+
+        <!-- Simulation Speed Toggles -->
+        <div class="flex items-center gap-1.5 bg-black/50 p-1 rounded-xl border border-white/10 text-xs">
+          <span class="text-[10px] text-slate-400 uppercase font-bold px-1">Speed:</span>
+          <button onclick="setSpeed(1)" id="spdBtn1" class="px-2 py-0.5 rounded text-[11px] font-bold bg-white/20 text-white">1x</button>
+          <button onclick="setSpeed(5)" id="spdBtn5" class="px-2 py-0.5 rounded text-[11px] font-bold text-slate-400 hover:text-white">5x</button>
+          <button onclick="setSpeed(20)" id="spdBtn20" class="px-2 py-0.5 rounded text-[11px] font-bold text-slate-400 hover:text-white">Instant</button>
+        </div>
+      </div>
+
+      <!-- Live Delay Alert Banner -->
+      <div id="delayBanner" class="mt-4 p-3 rounded-2xl bg-amber-500/15 border border-amber-400/40 text-amber-300 text-xs flex items-center justify-between gap-3 hidden animate-pulse">
+        <div class="flex items-center gap-2.5">
+          <span class="text-xl">⚠️</span>
+          <div>
+            <strong class="block text-white" id="delayTitle">Evening Griddle Rush Backlog</strong>
+            <span class="text-[11px] text-amber-200" id="delayDesc">Fresh quarter pounder patties grilling to order (+25s added)</span>
+          </div>
+        </div>
+        <button onclick="injectSimulatedDelay()" class="text-[10px] px-2.5 py-1 rounded bg-amber-500/30 text-white hover:bg-amber-500/50">Inject Delay</button>
+      </div>
+
+      <!-- Timer & Live Message -->
+      <div class="py-6 text-center">
+        <p class="text-xs uppercase tracking-widest text-slate-400 font-mono mb-1">Estimated Preparation / Dispatch Time</p>
+        <div id="simTimer" class="text-5xl font-black font-mono text-brand-neonCyan tracking-tight">02:30</div>
+        <p id="simStatusMsg" class="text-xs text-brand-gold mt-2 font-medium">Toasting buns and searing 100% pure beef...</p>
+      </div>
+
+      <!-- Progress Bar & Stages -->
+      <div class="relative py-4">
+        <div class="absolute top-1/2 left-4 right-4 h-1.5 bg-white/10 -translate-y-1/2 rounded-full overflow-hidden">
+          <div id="simProgressBar" class="h-full bg-gradient-to-r from-brand-neonCyan via-teal-300 to-emerald-400 w-[10%] transition-all duration-300"></div>
+        </div>
+        
+        <div class="relative flex justify-between">
+          <div class="flex flex-col items-center">
+            <div id="dotStage1" class="w-9 h-9 rounded-full bg-brand-neonCyan text-black font-bold flex items-center justify-center text-xs">🔥</div>
+            <span class="text-[10px] font-semibold text-white mt-2">Kitchen Grill</span>
+          </div>
+          <div class="flex flex-col items-center">
+            <div id="dotStage2" class="w-9 h-9 rounded-full bg-slate-800 text-slate-400 font-bold flex items-center justify-center text-xs border border-white/20">🍟</div>
+            <span class="text-[10px] font-semibold text-slate-400 mt-2">Bagging & Fries</span>
+          </div>
+          <div class="flex flex-col items-center">
+            <div id="dotStage3" class="w-9 h-9 rounded-full bg-slate-800 text-slate-400 font-bold flex items-center justify-center text-xs border border-white/20">🛵</div>
+            <span class="text-[10px] font-semibold text-slate-400 mt-2">Dispatch</span>
+          </div>
+          <div class="flex flex-col items-center">
+            <div id="dotStage4" class="w-9 h-9 rounded-full bg-slate-800 text-slate-400 font-bold flex items-center justify-center text-xs border border-white/20">🎉</div>
+            <span class="text-[10px] font-semibold text-slate-400 mt-2">Ready / Delivered</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 bg-black/40 rounded-2xl p-3 border border-white/10 flex items-center justify-between text-xs">
+        <span id="trackerSummary" class="text-white truncate max-w-[340px]">Items Summary</span>
+        <button onclick="toggleTrackerModal(false)" class="px-3 py-1.5 rounded-lg glass-card text-slate-300 hover:text-white">
+          Minimize
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= QUICKBOT AI ORDERING AGENT DRAWER ================= -->
+  <div id="aiDrawer" class="fixed inset-y-0 right-0 w-full sm:w-[420px] z-50 glass-panel border-l border-white/15 transform translate-x-full transition-transform duration-300 ease-out flex flex-col shadow-2xl">
+    <div class="p-4 border-b border-white/10 flex items-center justify-between bg-black/40">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center font-bold text-base shadow-neon-purple">🤖</div>
+        <div>
+          <h3 class="font-bold text-sm text-white">QuickBot AI Assistant</h3>
+          <p class="text-[10px] text-brand-neonCyan font-mono">⚡ Evening Shift Active • Ready</p>
+        </div>
+      </div>
+      <button onclick="toggleAIAssistant()" class="text-slate-400 hover:text-white text-lg">✕</button>
+    </div>
+
+    <!-- AI Chat Messages -->
+    <div id="aiChatStream" class="flex-1 overflow-y-auto p-4 space-y-3.5 text-xs">
+      <div class="flex gap-2.5 items-start">
+        <span class="text-xl">🤖</span>
+        <div class="glass-card p-3 rounded-2xl rounded-tl-none border-white/10 text-slate-200 leading-relaxed max-w-[85%]">
+          Selamat malam! The evening feast section is wide open right now. Craving a <strong>Big Mac® Combo</strong> or need a voucher applied to your meal? Tap below!
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Prompts Pill Bar -->
+    <div class="px-3 py-2 border-t border-white/10 bg-black/40 flex gap-1.5 overflow-x-auto text-[11px] scrollbar-none">
+      <button onclick="sendQuickPrompt('Order Big Mac Meal with Milo Dinosaur')" class="px-2.5 py-1 rounded-full glass-card whitespace-nowrap text-brand-neonCyan hover:bg-white/10">🍔 Big Mac + Milo Dino</button>
+      <button onclick="sendQuickPrompt('Apply RM5 off voucher to my feast')" class="px-2.5 py-1 rounded-full glass-card whitespace-nowrap text-brand-gold hover:bg-white/10">🎟️ Use FEAST5 Voucher</button>
+      <button onclick="sendQuickPrompt('What is the best weekend movie combo?')" class="px-2.5 py-1 rounded-full glass-card whitespace-nowrap text-purple-300 hover:bg-white/10">🍿 Movie Night Feast</button>
+    </div>
+
+    <!-- Chat Input Form -->
+    <form onsubmit="handleAISubmit(event)" class="p-3 border-t border-white/10 bg-black/50 flex gap-2">
+      <input 
+        type="text" 
+        id="aiInput" 
+        placeholder="e.g. 'Order Ayam Goreng 2pcs Combo with McFlurry'..." 
+        class="flex-1 glass-card border border-white/15 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-brand-neonCyan" 
+      />
+      <button type="submit" class="px-4 py-2 rounded-xl bg-brand-neonCyan text-black font-bold text-xs shadow-neon-cyan hover:brightness-110 active:scale-95 transition">
+        Send
+      </button>
+    </form>
+  </div>
+
+  <!-- ================= JAVASCRIPT LOGIC ================= -->
+  <script>
+    /* Web Audio API Sound Synthesizer */
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playSfx(type = 'click') {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      if (type === 'click') {
+        osc.frequency.setValueAtTime(540, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.08);
+      } else if (type === 'add') {
+        osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.12);
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.12);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.12);
+      } else if (type === 'voucher') {
+        osc.frequency.setValueAtTime(659, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1318, audioCtx.currentTime + 0.18);
+        gain.gain.setValueAtTime(0.14, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.22);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.22);
+      } else if (type === 'success') {
+        osc.frequency.setValueAtTime(523, audioCtx.currentTime);
+        osc.frequency.setValueAtTime(659, audioCtx.currentTime + 0.1);
+        osc.frequency.setValueAtTime(784, audioCtx.currentTime + 0.2);
+        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.35);
+      }
+    }
+
+    /* VIP Membership & Subscription State */
+    let memberData = {
+      name: 'Alex Wong',
+      tier: 'Gold VIP',
+      planId: 'SUB-VIP-GOLD',
+      monthlyFee: 9.90,
+      points: 1250,
+      discountRate: 0.15 // 15% VIP discount
+    };
+
+    /* Available Vouchers Catalog */
+    const AVAILABLE_VOUCHERS = [
+      {
+        code: 'FEAST5',
+        title: 'RM 5.00 OFF Evening Feast',
+        desc: 'Valid on any Big Mac®, Ayam Goreng, or Angus combo order.',
+        minSpend: 15.00,
+        type: 'fixed',
+        value: 5.00,
+        badge: 'Top Voucher'
+      },
+      {
+        code: 'NEONVIP15',
+        title: '15% Off Total Cart',
+        desc: 'Subscriber bonus voucher for all weekend refreshment items.',
+        minSpend: 20.00,
+        type: 'percent',
+        value: 0.15,
+        badge: 'VIP Only'
+      },
+      {
+        code: 'DINOCOOL',
+        title: 'Free Iced Milo Dinosaur',
+        desc: 'Deduct RM 2.50 drink upgrade on any combo.',
+        minSpend: 10.00,
+        type: 'fixed',
+        value: 2.50,
+        badge: 'Beverage Perk'
+      },
+      {
+        code: 'WEEKEND10',
+        title: 'RM 10.00 OFF Movie Box',
+        desc: 'Instant discount on the Weekend Movie Night sharing box.',
+        minSpend: 30.00,
+        type: 'fixed',
+        value: 10.00,
+        badge: 'Party Saver'
+      }
+    ];
+
+    let appliedVoucher = null;
+
+    /* Upgrades and Side Options Catalog */
+    const DRINK_DESSERT_OPTIONS = [
+      { id: 'coke', name: 'Coca-Cola Zero', price: 0, icon: '🥤' },
+      { id: 'milo_dino', name: 'Iced Milo® Dinosaur', price: 2.50, icon: '🦕' },
+      { id: 'latte', name: 'McCafé® Iced Latte', price: 2.00, icon: '☕' },
+      { id: 'tehtarik', name: 'McCafé® Teh Tarik', price: 1.50, icon: '🧋' },
+      { id: 'mcflurry', name: 'Oreo® McFlurry®', price: 2.50, icon: '🍦' },
+      { id: 'durian_flurry', name: 'D24 Durian McFlurry®', price: 3.50, icon: '🍈' },
+      { id: 'apple_pie', name: 'Warm Apple Pie', price: 1.00, icon: '🥧' }
+    ];
+
+    const ADDON_OPTIONS = [
+      { id: 'large_fries', name: 'Upsize Large Fries', price: 3.20, icon: '🍟' },
+      { id: 'cheesy_fries', name: 'Cheesy Loaded Fries', price: 4.50, icon: '🧀' },
+      { id: 'nuggets4', name: '4pcs Chicken McNuggets®', price: 4.90, icon: '🍗' },
+      { id: 'chicken1pc', name: '1pc Ayam Goreng McD', price: 5.50, icon: '🍗' }
+    ];
+
+    /* Products Catalog */
+    const PRODUCTS = [
+      // REGULAR & EVENING FEAST SHIFT (OPEN NOW)
+      { id: 1, name: 'The Big Mac®', shift: 'afternoon', category: 'super_value', basePrice: 13.00, comboPrice: 17.50, prepTime: '130s', badge: 'Global Icon', image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80', desc: 'Two 100% pure beef patties, special secret sauce, crisp lettuce, cheese, pickles, onions.' },
+      { id: 2, name: 'Double Big Mac® (4 Patties)', shift: 'afternoon', category: 'super_value', basePrice: 17.50, comboPrice: 21.90, prepTime: '160s', badge: 'Mega 4 Patties', image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80', desc: 'Four pure beef patties layered with double cheese, pickles, and special thousand island dressing.' },
+      { id: 3, name: 'Quarter Pounder® with Cheese', shift: 'afternoon', category: 'super_value', basePrice: 14.50, comboPrice: 18.90, prepTime: '130s', badge: '100% Fresh Beef', image: 'https://images.unsplash.com/photo-1553979459-d2229ba7433b?auto=format&fit=crop&w=600&q=80', desc: 'Quarter pound fresh beef patty, slivered onions, tart pickles, two melted cheese slices.' },
+      { id: 4, name: 'Filet-O-Fish® Supreme', shift: 'afternoon', category: 'super_value', basePrice: 10.40, comboPrice: 14.90, prepTime: '110s', badge: 'Wild Caught', image: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=600&q=80', desc: 'Golden crispy Alaskan Pollock fillet with zesty tartar sauce on soft steamed bun.' },
+      { id: 8, name: 'Ayam Goreng McD™ (2pcs Feast)', shift: 'afternoon', category: 'super_value', basePrice: 13.45, comboPrice: 17.95, prepTime: '90s', badge: 'Extra Crispy', image: 'https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?auto=format&fit=crop&w=600&q=80', desc: 'Signature extra-crispy spiced fried chicken with hot piping aroma and juicy meat (Spicy).' },
+      { id: 9, name: 'Ayam Goreng McD™ (3pcs Mega)', shift: 'afternoon', category: 'super_value', basePrice: 19.50, comboPrice: 23.50, prepTime: '100s', badge: '3-Piece Mega', image: 'https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?auto=format&fit=crop&w=600&q=80', desc: 'Three jumbo pieces of golden spiced fried chicken with fries and chilled drink.' },
+      { id: 11, name: 'Spicy Chicken McDeluxe™', shift: 'afternoon', category: 'super_value', basePrice: 13.00, comboPrice: 17.50, prepTime: '120s', badge: 'Fiery Thigh', image: 'https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?auto=format&fit=crop&w=600&q=80', desc: 'Whole marinated chicken thigh crispy-fried with cornmeal bun and creamy garlic dressing.' },
+      { id: 15, name: 'Angus Third Pounder - Deluxe', shift: 'afternoon', category: 'super_value', basePrice: 19.90, comboPrice: 24.50, prepTime: '150s', badge: '100% Angus Beef', image: 'https://images.unsplash.com/photo-1553979459-d2229ba7433b?auto=format&fit=crop&w=600&q=80', desc: 'Thick Angus beef patty, red onions, tomato, crisp greens, and creamy mustard sauce.' },
+
+      // ALL-DAY DRINKS & REFRESHMENTS
+      { id: 201, name: 'Iced Milo® Dinosaur Supreme', shift: 'any', category: 'drinks', basePrice: 5.80, comboPrice: 5.80, prepTime: '40s', badge: 'Malaysian Legend', image: 'https://images.unsplash.com/photo-1517256064527-09c73fc73e38?auto=format&fit=crop&w=600&q=80', desc: 'Chilled rich chocolate malt topped with an extra heaping mountain of un-dissolved Milo powder.' },
+      { id: 202, name: 'McCafé® Iced Caramel Latte', shift: 'any', category: 'drinks', basePrice: 8.50, comboPrice: 8.50, prepTime: '60s', badge: '100% Arabica', image: 'https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?auto=format&fit=crop&w=600&q=80', desc: 'Freshly pulled espresso with creamy chilled milk and buttery caramel drizzle.' },
+      { id: 203, name: 'Frozen Coca-Cola Slush', shift: 'any', category: 'drinks', basePrice: 4.50, comboPrice: 4.50, prepTime: '30s', badge: 'Ice Cool', image: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=600&q=80', desc: 'Sub-zero slushified bubbly Coca-Cola for the ultimate evening cooldown.' },
+
+      // ALL-DAY DESSERTS
+      { id: 301, name: 'Oreo® McFlurry®', shift: 'any', category: 'desserts', basePrice: 6.90, comboPrice: 6.90, prepTime: '45s', badge: 'Sweet Craving', image: 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=600&q=80', desc: 'Creamy soft serve vanilla ice cream machine-swirled with chunky crunchy Oreo bits.' },
+      { id: 302, name: 'D24 Durian McFlurry®', shift: 'any', category: 'desserts', basePrice: 9.20, comboPrice: 9.20, prepTime: '45s', badge: 'King of Fruits', image: 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=600&q=80', desc: 'Signature soft serve blended with authentic D24 durian fruit puree and crispy topping.' },
+      { id: 303, name: 'Warm Crispy Apple Pie', shift: 'any', category: 'desserts', basePrice: 3.90, comboPrice: 3.90, prepTime: '30s', badge: 'Baked Fresh', image: 'https://images.unsplash.com/photo-1519915028121-7d3463d20b13?auto=format&fit=crop&w=600&q=80', desc: 'Flaky bubbly pastry crust filled with warm cinnamon-spiced tender apple compote.' },
+
+      // WEEKEND COMBO SHARING PACKS
+      { id: 401, name: 'Weekend Movie Night Box', shift: 'afternoon', category: 'combos', basePrice: 28.50, comboPrice: 32.90, prepTime: '150s', badge: 'Party Saver', image: 'https://images.unsplash.com/photo-1562967914-608f82629710?auto=format&fit=crop&w=600&q=80', desc: '9pcs Chicken McNuggets, 2x Medium Fries, 2x Iced Milo Dinosaurs, and 2x Apple Pies.' },
+      { id: 402, name: 'Duo Burger Refreshment Pack', shift: 'afternoon', category: 'combos', basePrice: 29.90, comboPrice: 34.50, prepTime: '160s', badge: 'Best for 2', image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80', desc: '1x Big Mac, 1x Filet-O-Fish, 2x Large Golden Fries, and 2x Oreo McFlurrys.' },
+
+      // BREAKFAST STATION (CURRENTLY LOCKED IN EVENING)
+      { id: 101, name: 'Sausage McMuffin® with Egg', shift: 'morning', category: 'breakfast', basePrice: 7.50, comboPrice: 11.30, prepTime: '90s', badge: 'Morning Classic', image: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=600&q=80', desc: 'Savory sausage patty, freshly cracked egg, melted American cheese on toasted muffin.' },
+      { id: 103, name: 'Nasi Lemak McD™ (1pc Ayam Goreng)', shift: 'morning', category: 'breakfast', basePrice: 10.90, comboPrice: 14.50, prepTime: '100s', badge: 'Local Icon', image: 'https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?auto=format&fit=crop&w=600&q=80', desc: 'Fragrant santan coconut rice with spicy sambal tumis, crispy anchovies, and fried chicken.' },
+      { id: 104, name: 'Bubur Ayam McD™ (Savory Porridge)', shift: 'morning', category: 'breakfast', basePrice: 6.50, comboPrice: 9.90, prepTime: '60s', badge: 'Warm Comfort', image: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=600&q=80', desc: 'Silky rice congee topped with tender shredded chicken, fried shallots, ginger, and chilies.' },
+      { id: 105, name: 'Golden Hotcakes (3pcs) w/ Butter', shift: 'morning', category: 'breakfast', basePrice: 7.90, comboPrice: 11.90, prepTime: '75s', badge: 'Fluffy Pancakes', image: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?auto=format&fit=crop&w=600&q=80', desc: 'Three golden griddled hotcakes with whipped salted butter and rich maple syrup.' }
+    ];
+
+    /* Application State */
+    // REQUEST 1: DEFAULT OPEN FOR REGULAR & EVENING FEAST SECTION
+    let activeShift = 'afternoon';
+    let selectedCategory = 'all';
+    let searchQuery = '';
+    let cart = [];
+    let currentCustomizingItem = null;
+    let customizerMealType = 'combo';
+    let customizerDrink = DRINK_DESSERT_OPTIONS[0];
+    let customizerAddons = [];
+
+    // Order Simulator State
+    let activeOrder = null;
+    let simulatorTimer = null;
+    let simSpeedMultiplier = 1;
+
+    /* Initialize Application */
+    window.addEventListener('DOMContentLoaded', () => {
+      setShiftMode('afternoon'); // Launch directly into evening feast
+      renderCategoryTabs();
+      renderVouchersList();
+      updateCartDisplay();
+      startLiveClock();
+    });
+
+    function startLiveClock() {
+      setInterval(() => {
+        const now = new Date();
+        document.getElementById('liveClockDisplay').textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      }, 1000);
+    }
+
+    /* Shift & Menu Management */
+    function setShiftMode(shift) {
+      playSfx('click');
+      activeShift = shift;
+
+      const morningBtn = document.getElementById('shiftBtnMorning');
+      const afternoonBtn = document.getElementById('shiftBtnAfternoon');
+      const shiftBadge = document.getElementById('shiftBadge');
+
+      if (shift === 'afternoon') {
+        afternoonBtn.className = "px-3 py-1.5 rounded-xl font-bold text-[11px] bg-brand-neonCyan text-black shadow-md transition";
+        morningBtn.className = "px-3 py-1.5 rounded-xl font-bold text-[11px] text-slate-400 hover:text-white transition";
+        shiftBadge.className = "text-[10px] tracking-wider px-2.5 py-0.5 rounded-full font-mono uppercase font-bold border border-brand-neonCyan/40 bg-brand-neonCyan/15 text-brand-neonCyan shadow-neon-cyan";
+        shiftBadge.textContent = "🌙 Evening Feast (Open Now)";
+      } else {
+        morningBtn.className = "px-3 py-1.5 rounded-xl font-bold text-[11px] bg-brand-gold text-black shadow-md transition";
+        afternoonBtn.className = "px-3 py-1.5 rounded-xl font-bold text-[11px] text-slate-400 hover:text-white transition";
+        shiftBadge.className = "text-[10px] tracking-wider px-2.5 py-0.5 rounded-full font-mono uppercase font-bold border border-brand-gold/40 bg-brand-gold/15 text-brand-gold shadow-neon-gold";
+        shiftBadge.textContent = "☀️ Breakfast McValue (Simulation Only)";
+      }
+
+      renderProducts();
+    }
+
+    function renderCategoryTabs() {
+      const categories = [
+        { id: 'all', name: '⚡ All Feasts & Items' },
+        { id: 'super_value', name: 'Super Value Meals' },
+        { id: 'combos', name: 'Weekend Combo Boxes' },
+        { id: 'drinks', name: 'Drinks & McCafé®' },
+        { id: 'desserts', name: 'Desserts & McFlurry' },
+        { id: 'breakfast', name: 'Breakfast Station' }
+      ];
+
+      document.getElementById('categoryNavTabs').innerHTML = categories.map(cat => `
+        <button onclick="setCategory('${cat.id}')" class="px-4 py-2 rounded-2xl text-xs font-bold transition whitespace-nowrap ${
+          selectedCategory === cat.id 
+            ? 'bg-brand-neonCyan text-black shadow-md shadow-brand-neonCyan/30' 
+            : 'glass-card text-slate-300 hover:text-white'
+        }">${cat.name}</button>
+      `).join('');
+    }
+
+    function setCategory(catId) {
+      playSfx('click');
+      selectedCategory = catId;
+      renderCategoryTabs();
+      renderProducts();
+    }
+
+    function handleSearch(val) {
+      searchQuery = val.toLowerCase().trim();
+      renderProducts();
+    }
+
+    /* Product Catalog Rendering */
+    function renderProducts() {
+      const grid = document.getElementById('productCatalogGrid');
+
+      const filtered = PRODUCTS.filter(p => {
+        const matchCat = selectedCategory === 'all' || p.category === selectedCategory;
+        const matchSearch = p.name.toLowerCase().includes(searchQuery) || p.desc.toLowerCase().includes(searchQuery);
+        return matchCat && matchSearch;
+      });
+
+      if (!filtered.length) {
+        grid.innerHTML = `<div class="col-span-full py-16 text-center text-slate-400 text-xs">No items found matching your filters.</div>`;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(item => {
+        const isLocked = item.shift !== 'any' && item.shift !== activeShift;
+        const servingHours = item.shift === 'morning' ? '4:00 AM – 11:00 AM' : '11:00 AM – 4:00 AM';
+
+        return `
+          <div class="glass-card rounded-3xl p-4 flex flex-col justify-between group overflow-hidden border ${
+            isLocked ? 'locked-card border-red-500/30' : 'border-white/10'
+          }">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-2.5">
+                <span class="text-[10px] font-mono tracking-wider uppercase px-2.5 py-0.5 rounded-full ${
+                  isLocked ? 'bg-red-500/20 text-red-300 border border-red-400/40 font-bold' : 'bg-brand-neonCyan/15 text-brand-neonCyan border border-brand-neonCyan/30 font-bold'
+                }">${isLocked ? '🔒 STATION CLOSED' : item.badge}</span>
+                <span class="text-[11px] font-mono text-slate-400">⏱️ ${item.prepTime}</span>
+              </div>
+
+              <div class="w-full h-44 rounded-2xl overflow-hidden bg-black/40 mb-3.5 relative border border-white/10">
+                <img src="${item.image}" alt="${item.name}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ${isLocked ? 'opacity-30' : ''}" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+
+                ${isLocked ? `
+                  <div class="absolute inset-0 flex flex-col items-center justify-center p-3 text-center bg-black/60 backdrop-blur-[2px]">
+                    <span class="text-2xl mb-1">🔒</span>
+                    <strong class="text-xs text-red-400 uppercase tracking-wider font-bold">Breakfast Shift Closed</strong>
+                    <span class="text-[10px] text-slate-300 font-mono mt-0.5">Unlocks Tomorrow at 04:00 AM</span>
+                  </div>
+                ` : ''}
+              </div>
+
+              <h3 class="font-extrabold text-white text-sm group-hover:text-brand-neonCyan transition-colors">${item.name}</h3>
+              <p class="text-xs text-slate-300 line-clamp-2 mt-1 mb-3 leading-relaxed">${item.desc}</p>
+            </div>
+
+            <div class="pt-3 border-t border-white/10 flex items-center justify-between">
+              <div>
+                <span class="text-[10px] text-slate-400 block font-mono">From</span>
+                <span class="text-base font-black font-mono text-brand-neonCyan">RM ${item.comboPrice.toFixed(2)}</span>
+              </div>
+
+              ${isLocked ? `
+                <button onclick="lockedAlert('${item.name}', '${servingHours}')" class="px-3.5 py-2 rounded-xl bg-slate-800 text-slate-400 font-bold text-xs cursor-not-allowed border border-white/10">
+                  🔒 Locked
+                </button>
+              ` : `
+                <button onclick="openCustomizer(${item.id})" class="px-4 py-2 rounded-xl bg-brand-neonCyan hover:bg-cyan-300 text-black font-extrabold text-xs active:scale-95 transition shadow-neon-cyan flex items-center gap-1.5">
+                  <span>Order Feast ➔</span>
+                </button>
+              `}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function lockedAlert(name, hours) {
+      playSfx('click');
+      alert(`⏰ TIMELINE NOTICE: "${name}" is restricted to morning hours (${hours}). The evening feast griddle is currently serving burgers and crispy fried chicken.`);
+    }
+
+    /* Step-by-Step Customizer */
+    function openCustomizer(productId) {
+      playSfx('click');
+      currentCustomizingItem = PRODUCTS.find(p => p.id === productId);
+      if (!currentCustomizingItem) return;
+
+      if (currentCustomizingItem.shift !== 'any' && currentCustomizingItem.shift !== activeShift) {
+        lockedAlert(currentCustomizingItem.name, '4:00 AM – 11:00 AM');
+        return;
+      }
+
+      customizerMealType = currentCustomizingItem.category === 'drinks' || currentCustomizingItem.category === 'desserts' ? 'alacarte' : 'combo';
+      customizerDrink = DRINK_DESSERT_OPTIONS[0];
+      customizerAddons = [];
+
+      document.getElementById('custTitle').textContent = currentCustomizingItem.name;
+      renderCustomizerDrinks();
+      renderCustomizerAddons();
+      updateCustomizerMealButtons();
+      updateCustomizerPrice();
+
+      document.getElementById('customizerModal').classList.remove('hidden');
+    }
+
+    function closeCustomizerModal() {
+      document.getElementById('customizerModal').classList.add('hidden');
+      currentCustomizingItem = null;
+    }
+
+    function setCustomizerMealType(type) {
+      playSfx('click');
+      customizerMealType = type;
+      updateCustomizerMealButtons();
+      updateCustomizerPrice();
+    }
+
+    function updateCustomizerMealButtons() {
+      const bCombo = document.getElementById('custBtnCombo');
+      const bAla = document.getElementById('custBtnAlaCarte');
+
+      if (customizerMealType === 'combo') {
+        bCombo.className = "p-3 rounded-xl border border-brand-neonCyan bg-brand-neonCyan/20 text-left transition";
+        bAla.className = "p-3 rounded-xl border border-white/10 text-left transition hover:border-white/30";
+      } else {
+        bAla.className = "p-3 rounded-xl border border-brand-neonCyan bg-brand-neonCyan/20 text-left transition";
+        bCombo.className = "p-3 rounded-xl border border-white/10 text-left transition hover:border-white/30";
+      }
+    }
+
+    function renderCustomizerDrinks() {
+      const container = document.getElementById('custDrinkContainer');
+      container.innerHTML = DRINK_DESSERT_OPTIONS.map(opt => {
+        const isSel = customizerDrink.id === opt.id;
+        return `
+          <button type="button" onclick="selectCustomizerDrink('${opt.id}')" class="p-2 rounded-xl border text-center transition flex flex-col items-center justify-center ${
+            isSel ? 'border-brand-neonCyan bg-brand-neonCyan/20 shadow-neon-cyan' : 'border-white/10 hover:border-white/30'
+          }">
+            <span class="text-xl mb-0.5">${opt.icon}</span>
+            <span class="text-[11px] font-bold text-white leading-tight truncate w-full">${opt.name}</span>
+            <span class="text-[9px] text-emerald-400 font-mono mt-0.5">${opt.price > 0 ? '+RM ' + opt.price.toFixed(2) : 'Included'}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectCustomizerDrink(id) {
+      playSfx('click');
+      customizerDrink = DRINK_DESSERT_OPTIONS.find(d => d.id === id);
+      renderCustomizerDrinks();
+      updateCustomizerPrice();
+    }
+
+    function renderCustomizerAddons() {
+      const container = document.getElementById('custAddonContainer');
+      container.innerHTML = ADDON_OPTIONS.map(opt => {
+        const isSel = customizerAddons.some(a => a.id === opt.id);
+        return `
+          <button type="button" onclick="toggleCustomizerAddon('${opt.id}')" class="p-2 rounded-xl border text-center transition flex flex-col items-center justify-center ${
+            isSel ? 'border-brand-gold bg-brand-gold/20 shadow-neon-gold' : 'border-white/10 hover:border-white/30'
+          }">
+            <span class="text-xl mb-0.5">${opt.icon}</span>
+            <span class="text-[11px] font-bold text-white leading-tight truncate w-full">${opt.name}</span>
+            <span class="text-[9px] text-brand-gold font-mono mt-0.5">+RM ${opt.price.toFixed(2)}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function toggleCustomizerAddon(id) {
+      playSfx('click');
+      const item = ADDON_OPTIONS.find(a => a.id === id);
+      const exists = customizerAddons.findIndex(a => a.id === id);
+      if (exists !== -1) customizerAddons.splice(exists, 1);
+      else customizerAddons.push(item);
+      renderCustomizerAddons();
+      updateCustomizerPrice();
+    }
+
+    function calcCustomizerPrice() {
+      if (!currentCustomizingItem) return 0;
+      let total = customizerMealType === 'combo' ? currentCustomizingItem.comboPrice : currentCustomizingItem.basePrice;
+      total += customizerDrink.price;
+      customizerAddons.forEach(a => total += a.price);
+      return total;
+    }
+
+    function updateCustomizerPrice() {
+      const price = calcCustomizerPrice();
+      document.getElementById('custRunningPrice').textContent = `RM ${price.toFixed(2)}`;
+      document.getElementById('custCommitPrice').textContent = `RM ${price.toFixed(2)}`;
+    }
+
+    function commitCustomizedItem() {
+      if (!currentCustomizingItem) return;
+      playSfx('add');
+
+      const itemKey = `${currentCustomizingItem.id}_${customizerMealType}_${customizerDrink.id}_${customizerAddons.map(a=>a.id).join('-')}`;
+      const existing = cart.find(c => c.cartKey === itemKey);
+
+      if (existing) {
+        existing.qty++;
+      } else {
+        cart.push({
+          cartKey: itemKey,
+          product: currentCustomizingItem,
+          mealType: customizerMealType,
+          drink: customizerDrink,
+          addons: [...customizerAddons],
+          unitPrice: calcCustomizerPrice(),
+          qty: 1
+        });
+      }
+
+      closeCustomizerModal();
+      updateCartDisplay();
+      toggleCartDrawer(true);
+    }
+
+    /* Cart & Pricing Calculation */
+    function toggleCartDrawer(forceOpen = null) {
+      const drawer = document.getElementById('cartDrawer');
+      if (forceOpen === true || drawer.classList.contains('translate-x-full')) {
+        drawer.classList.remove('translate-x-full');
+      } else {
+        drawer.classList.add('translate-x-full');
+      }
+    }
+
+    function adjustCartQty(cartKey, delta) {
+      playSfx('click');
+      const idx = cart.findIndex(c => c.cartKey === cartKey);
+      if (idx !== -1) {
+        cart[idx].qty += delta;
+        if (cart[idx].qty <= 0) cart.splice(idx, 1);
+      }
+      updateCartDisplay();
+    }
+
+    function updateCartDisplay() {
+      const totalItems = cart.reduce((acc, c) => acc + c.qty, 0);
+      const subtotal = cart.reduce((acc, c) => acc + (c.unitPrice * c.qty), 0);
+
+      // Voucher discount calculation
+      let voucherDiscount = 0;
+      if (appliedVoucher) {
+        if (appliedVoucher.type === 'fixed') {
+          voucherDiscount = Math.min(appliedVoucher.value, subtotal);
+        } else if (appliedVoucher.type === 'percent') {
+          voucherDiscount = subtotal * appliedVoucher.value;
+        }
+      }
+
+      // VIP Subscriber discount calculation (15%)
+      const subDiscount = (subtotal - voucherDiscount) * memberData.discountRate;
+      const discountedSubtotal = Math.max(0, subtotal - voucherDiscount - subDiscount);
+      const sst = discountedSubtotal * 0.06;
+      const grandTotal = discountedSubtotal + sst;
+      const earnedPts = Math.floor(grandTotal * 15);
+
+      // DOM Updates
+      const badgeDesk = document.getElementById('cartCountBadge');
+      badgeDesk.textContent = totalItems;
+      badgeDesk.className = totalItems > 0 
+        ? badgeDesk.className.replace('scale-0', 'scale-100')
+        : badgeDesk.className.replace('scale-100', 'scale-0');
+
+      document.getElementById('cartBadgeMob').textContent = totalItems;
+      document.getElementById('trayItemCount').textContent = `${totalItems} items`;
+      document.getElementById('cartSubtotal').textContent = `RM ${subtotal.toFixed(2)}`;
+      document.getElementById('cartTax').textContent = `RM ${sst.toFixed(2)}`;
+      document.getElementById('cartGrandTotal').textContent = `RM ${grandTotal.toFixed(2)}`;
+      document.getElementById('modalPayTotal').textContent = `RM ${grandTotal.toFixed(2)}`;
+      document.getElementById('modalPtsEarn').textContent = `+${earnedPts} pts`;
+      document.getElementById('cartSubDiscountVal').textContent = `-RM ${subDiscount.toFixed(2)}`;
+      document.getElementById('checkoutBtn').disabled = totalItems === 0;
+
+      // Voucher rows
+      if (appliedVoucher && voucherDiscount > 0) {
+        document.getElementById('cartAppliedVoucherRow').classList.remove('hidden');
+        document.getElementById('cartAppliedVoucherLabel').textContent = `Coupon: ${appliedVoucher.code} (-RM ${voucherDiscount.toFixed(2)})`;
+        document.getElementById('cartVoucherDiscountLine').classList.remove('hidden');
+        document.getElementById('cartVoucherDiscountVal').textContent = `-RM ${voucherDiscount.toFixed(2)}`;
+        document.getElementById('appliedVoucherTag').classList.remove('hidden');
+      } else {
+        document.getElementById('cartAppliedVoucherRow').classList.add('hidden');
+        document.getElementById('cartVoucherDiscountLine').classList.add('hidden');
+        document.getElementById('appliedVoucherTag').classList.add('hidden');
+      }
+
+      const list = document.getElementById('cartItemsList');
+      if (!cart.length) {
+        list.innerHTML = `<div class="h-44 flex flex-col items-center justify-center text-xs text-slate-400"><span>Your tray is empty.</span><span class="text-[10px] text-slate-500 mt-1">Tap any item or ask QuickBot AI!</span></div>`;
+        return;
+      }
+
+      list.innerHTML = cart.map(item => `
+        <div class="glass-card p-3 rounded-2xl border border-white/10 flex items-center justify-between gap-3">
+          <img src="${item.product.image}" class="w-12 h-12 rounded-xl object-cover border border-white/10" />
+          <div class="flex-1 min-w-0">
+            <h4 class="text-xs font-bold text-white truncate">${item.product.name}</h4>
+            <p class="text-[10px] text-slate-400 truncate">🥤 ${item.drink.name}</p>
+            ${item.addons.length ? `<p class="text-[10px] text-brand-gold truncate">+ ${item.addons.map(a => a.name).join(', ')}</p>` : ''}
+            <div class="text-[11px] font-mono text-brand-neonCyan mt-0.5">RM ${(item.unitPrice * item.qty).toFixed(2)}</div>
+          </div>
+          <div class="flex items-center gap-2 bg-black/50 px-2 py-1 rounded-xl border border-white/10">
+            <button onclick="adjustCartQty('${item.cartKey}', -1)" class="text-xs px-1 text-slate-300 hover:text-white">-</button>
+            <span class="text-xs font-mono text-white font-bold">${item.qty}</span>
+            <button onclick="adjustCartQty('${item.cartKey}', 1)" class="text-xs px-1 text-slate-300 hover:text-white">+</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    /* REQUEST 3: VOUCHER SECTION ENGINE */
+    function toggleVoucherModal() {
+      playSfx('click');
+      document.getElementById('voucherModal').classList.toggle('hidden');
+    }
+
+    function renderVouchersList() {
+      const container = document.getElementById('voucherListContainer');
+      container.innerHTML = AVAILABLE_VOUCHERS.map(v => {
+        const isApplied = appliedVoucher && appliedVoucher.code === v.code;
+        return `
+          <div class="voucher-card p-3.5 rounded-2xl border flex items-center justify-between gap-3 ${
+            isApplied ? 'border-brand-neonCyan shadow-neon-cyan' : 'border-brand-gold/40'
+          }">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="font-mono text-xs font-black text-brand-gold px-2 py-0.5 rounded bg-brand-gold/20 border border-brand-gold/40">${v.code}</span>
+                <span class="text-[10px] px-2 py-0.5 rounded bg-white/10 text-white font-bold">${v.badge}</span>
+              </div>
+              <h4 class="text-xs font-bold text-white">${v.title}</h4>
+              <p class="text-[10px] text-slate-300 mt-0.5 leading-relaxed">${v.desc} (Min spend RM ${v.minSpend.toFixed(2)})</p>
+            </div>
+            <div>
+              ${isApplied ? `
+                <button onclick="removeAppliedVoucher()" class="px-3.5 py-1.5 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 text-xs font-bold">
+                  ✓ Applied
+                </button>
+              ` : `
+                <button onclick="applyVoucher('${v.code}')" class="px-4 py-2 rounded-xl bg-brand-gold text-black font-extrabold text-xs hover:brightness-110 active:scale-95 transition shadow-neon-gold">
+                  Apply ➔
+                </button>
+              `}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function applyVoucher(code) {
+      const voucher = AVAILABLE_VOUCHERS.find(v => v.code === code);
+      if (!voucher) return;
+
+      appliedVoucher = voucher;
+      playSfx('voucher');
+      renderVouchersList();
+      updateCartDisplay();
+      toggleVoucherModal();
+      toggleCartDrawer(true);
+    }
+
+    function applyManualVoucher() {
+      const code = document.getElementById('manualVoucherInput').value.trim().toUpperCase();
+      const voucher = AVAILABLE_VOUCHERS.find(v => v.code === code);
+      if (voucher) {
+        applyVoucher(code);
+      } else {
+        alert("Invalid Voucher Code! Try 'FEAST5' or 'NEONVIP15'.");
+      }
+    }
+
+    function applyVoucherFromCart() {
+      const code = document.getElementById('cartVoucherInput').value.trim().toUpperCase();
+      const voucher = AVAILABLE_VOUCHERS.find(v => v.code === code);
+      if (voucher) {
+        applyVoucher(code);
+        document.getElementById('cartVoucherInput').value = '';
+      } else {
+        alert("Invalid Voucher Code! Try 'FEAST5' or 'DINOCOOL'.");
+      }
+    }
+
+    function removeAppliedVoucher() {
+      playSfx('click');
+      appliedVoucher = null;
+      renderVouchersList();
+      updateCartDisplay();
+    }
+
+    /* REQUEST 2: VIP SUBSCRIPTION PASS & QR ENGINE */
+    function toggleMemberModal() {
+      playSfx('click');
+      document.getElementById('memberModal').classList.toggle('hidden');
+    }
+
+    function switchSubTab(tab) {
+      playSfx('click');
+      if (tab === 'qr') {
+        document.getElementById('subContentQr').classList.remove('hidden');
+        document.getElementById('subContentPlans').classList.add('hidden');
+        document.getElementById('subTabBtnQr').className = "px-4 py-2 rounded-xl bg-brand-neonCyan text-black transition shadow-neon-cyan";
+        document.getElementById('subTabBtnPlans').className = "px-4 py-2 rounded-xl text-slate-300 hover:text-white transition";
+      } else {
+        document.getElementById('subContentPlans').classList.remove('hidden');
+        document.getElementById('subContentQr').classList.add('hidden');
+        document.getElementById('subTabBtnPlans').className = "px-4 py-2 rounded-xl bg-brand-neonCyan text-black transition shadow-neon-cyan";
+        document.getElementById('subTabBtnQr').className = "px-4 py-2 rounded-xl text-slate-300 hover:text-white transition";
+      }
+    }
+
+    function activatePlan(name, price) {
+      playSfx('voucher');
+      memberData.tier = name;
+      memberData.monthlyFee = price;
+      memberData.discountRate = name.includes('Platinum') ? 0.25 : 0.15;
+      memberData.planId = name.includes('Platinum') ? 'SUB-VIP-PLATINUM' : 'SUB-VIP-GOLD';
+
+      document.getElementById('navSubscriptionStatus').textContent = `${name} Pass`;
+      document.getElementById('passTierBadge').textContent = `Tier: ${name} Subscriber`;
+      document.getElementById('passTokenDisplay').textContent = `#VIP-${memberData.planId}-LIVE`;
+      document.getElementById('cartMemberTag').textContent = `Alex Wong (${name})`;
+
+      switchSubTab('qr');
+      updateCartDisplay();
+      alert(`🎉 Subscription Activated: ${name} (RM ${price.toFixed(2)}/mo)! All rates updated.`);
+    }
+
+    function scanSubscriberQrAtKiosk() {
+      playSfx('voucher');
+      memberData.points += 100;
+      document.getElementById('navMemberPoints').textContent = `${memberData.points} pts`;
+      document.getElementById('passPointsCount').textContent = memberData.points;
+      alert(`✨ KIOSK SCAN SUCCESS: Verified ${memberData.tier} pass for Alex Wong. 100 bonus NeonPoints credited!`);
+    }
+
+    /* Checkout & Payment */
+    function openCheckoutModal() {
+      playSfx('click');
+      document.getElementById('checkoutModal').classList.remove('hidden');
+    }
+
+    function closeCheckoutModal() {
+      document.getElementById('checkoutModal').classList.add('hidden');
+    }
+
+    function executePayment(method) {
+      playSfx('success');
+      closeCheckoutModal();
+      toggleCartDrawer(false);
+
+      const subtotal = cart.reduce((acc, c) => acc + (c.unitPrice * c.qty), 0);
+      const earnedPts = Math.floor(subtotal * 15);
+      memberData.points += earnedPts;
+      document.getElementById('navMemberPoints').textContent = `${memberData.points} pts`;
+      document.getElementById('passPointsCount').textContent = memberData.points;
+
+      activeOrder = {
+        id: '#EV-' + Math.floor(1000 + Math.random() * 9000),
+        summary: cart.map(c => `${c.product.name} x${c.qty}`).join(', '),
+        totalSeconds: 150,
+        remainingSeconds: 150,
+        stage: 1,
+        delayed: false
+      };
+
+      cart = [];
+      appliedVoucher = null;
+      updateCartDisplay();
+      renderVouchersList();
+
+      document.getElementById('trackerHeaderBtn').classList.remove('hidden');
+      document.getElementById('trackerHeaderBtn').classList.add('flex');
+      document.getElementById('trackerOrderId').textContent = activeOrder.id;
+      document.getElementById('trackerSummary').textContent = activeOrder.summary;
+
+      toggleTrackerModal(true);
+      startOrderSimulation();
+    }
+
+    /* Kitchen Simulator */
+    function toggleTrackerModal(forceOpen = null) {
+      const modal = document.getElementById('trackerModal');
+      if (forceOpen === true || modal.classList.contains('hidden')) {
+        modal.classList.remove('hidden');
+      } else {
+        modal.classList.add('hidden');
+      }
+    }
+
+    function setSpeed(spd) {
+      playSfx('click');
+      simSpeedMultiplier = spd;
+      [1, 5, 20].forEach(s => {
+        const btn = document.getElementById(`spdBtn${s}`);
+        btn.className = s === spd ? "px-2 py-0.5 rounded text-[11px] font-bold bg-white/20 text-white" : "px-2 py-0.5 rounded text-[11px] font-bold text-slate-400 hover:text-white";
+      });
+    }
+
+    function injectSimulatedDelay() {
+      if (!activeOrder) return;
+      playSfx('click');
+      activeOrder.remainingSeconds += 25;
+      activeOrder.totalSeconds += 25;
+      triggerDelayBanner("Griddle Sear Delay", "Double checking patty core temperature (+25s added)");
+    }
+
+    function triggerDelayBanner(title, desc) {
+      const banner = document.getElementById('delayBanner');
+      document.getElementById('delayTitle').textContent = title;
+      document.getElementById('delayDesc').textContent = desc;
+      banner.classList.remove('hidden');
+    }
+
+    function startOrderSimulation() {
+      if (simulatorTimer) clearInterval(simulatorTimer);
+      document.getElementById('delayBanner').classList.add('hidden');
+
+      simulatorTimer = setInterval(() => {
+        if (!activeOrder) return;
+
+        if (!activeOrder.delayed && activeOrder.remainingSeconds < 100 && activeOrder.remainingSeconds > 80) {
+          activeOrder.delayed = true;
+          activeOrder.remainingSeconds += 25;
+          activeOrder.totalSeconds += 25;
+          triggerDelayBanner("Fresh Bun Caramelization Hold", "Double-checking griddle temp (+25s added)");
+        }
+
+        activeOrder.remainingSeconds -= 1 * simSpeedMultiplier;
+
+        if (activeOrder.remainingSeconds <= 0) {
+          activeOrder.remainingSeconds = 0;
+          activeOrder.stage = 4;
+          updateSimulatorUI();
+          clearInterval(simulatorTimer);
+          playSfx('success');
+          return;
+        }
+
+        const progress = (activeOrder.totalSeconds - activeOrder.remainingSeconds) / activeOrder.totalSeconds;
+        activeOrder.stage = progress < 0.3 ? 1 : progress < 0.65 ? 2 : progress < 0.95 ? 3 : 4;
+        updateSimulatorUI();
+      }, 1000);
+
+      updateSimulatorUI();
+    }
+
+    function updateSimulatorUI() {
+      const mins = Math.floor(activeOrder.remainingSeconds / 60);
+      const secs = Math.floor(activeOrder.remainingSeconds % 60);
+      document.getElementById('simTimer').textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+      const pct = Math.min(100, Math.round(((activeOrder.totalSeconds - activeOrder.remainingSeconds) / activeOrder.totalSeconds) * 100));
+      document.getElementById('simProgressBar').style.width = `${pct}%`;
+
+      const msgs = {
+        1: "Kitchen Sizzle: Searing pure beef & frying Ayam Goreng to perfection...",
+        2: "Fry & Bagging: Salting hot fries, blending McFlurrys & packing bags...",
+        3: "Dispatch & Courier: Handed off to express delivery runner / counter...",
+        4: "Order Ready! Please collect at Counter #4 or receive delivery."
+      };
+      const stages = { 1: "Kitchen Grill", 2: "Bagging", 3: "Dispatch", 4: "Ready" };
+
+      document.getElementById('simStatusMsg').textContent = msgs[activeOrder.stage];
+      document.getElementById('headerTrackerStage').textContent = stages[activeOrder.stage];
+
+      for (let i = 1; i <= 4; i++) {
+        const dot = document.getElementById(`dotStage${i}`);
+        if (i < activeOrder.stage) {
+          dot.className = "w-9 h-9 rounded-full bg-emerald-500 text-black font-bold flex items-center justify-center text-xs";
+          dot.innerHTML = "✓";
+        } else if (i === activeOrder.stage) {
+          dot.className = "w-9 h-9 rounded-full bg-brand-neonCyan text-black font-bold flex items-center justify-center text-xs animate-bounce shadow-neon-cyan";
+        } else {
+          dot.className = "w-9 h-9 rounded-full bg-slate-800 text-slate-500 font-bold flex items-center justify-center text-xs border border-white/20";
+        }
+      }
+    }
+
+    /* QuickBot AI Order & Voucher Assistant */
+    function toggleAIAssistant() {
+      playSfx('click');
+      document.getElementById('aiDrawer').classList.toggle('translate-x-full');
+    }
+
+    function sendQuickPrompt(text) {
+      document.getElementById('aiInput').value = text;
+      handleAISubmit(new Event('submit'));
+    }
+
+    function handleAISubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('aiInput');
+      const val = input.value.trim();
+      if (!val) return;
+      playSfx('click');
+
+      appendAIMessage('user', val);
+      input.value = '';
+
+      setTimeout(() => {
+        respondAsAI(val.toLowerCase());
+      }, 500);
+    }
+
+    function appendAIMessage(sender, text, quickActionHtml = '') {
+      const stream = document.getElementById('aiChatStream');
+      const div = document.createElement('div');
+      div.className = `flex gap-2.5 items-start ${sender === 'user' ? 'justify-end' : ''}`;
+
+      if (sender === 'user') {
+        div.innerHTML = `<div class="bg-brand-neonCyan/20 border border-brand-neonCyan/40 p-3 rounded-2xl rounded-tr-none text-white max-w-[85%]">${text}</div>`;
+      } else {
+        div.innerHTML = `
+          <span class="text-xl">🤖</span>
+          <div class="glass-card p-3 rounded-2xl rounded-tl-none border-white/10 text-slate-200 leading-relaxed max-w-[85%]">
+            <p>${text}</p>
+            ${quickActionHtml}
+          </div>
+        `;
+      }
+
+      stream.appendChild(div);
+      stream.scrollTop = stream.scrollHeight;
+    }
+
+    function respondAsAI(query) {
+      playSfx('add');
+
+      if (query.includes('voucher') || query.includes('feast5') || query.includes('coupon')) {
+        applyVoucher('FEAST5');
+        appendAIMessage('ai', 
+          "Done! I've automatically applied the <strong>FEAST5</strong> voucher (-RM 5.00) to your tray. Your evening meal is now cheaper!",
+          `<button onclick="toggleCartDrawer(true); toggleAIAssistant();" class="mt-2 w-full py-1.5 rounded-xl bg-brand-gold text-black font-extrabold text-[11px] shadow-neon-gold">View Tray with Discount</button>`
+        );
+      } else if (query.includes('big mac')) {
+        appendAIMessage('ai', "Configuring <strong>The Big Mac® Value Combo</strong> with fries and Milo Dinosaur. Ready to review and order:",
+          `<button onclick="openCustomizer(1); toggleAIAssistant();" class="mt-2 w-full py-1.5 rounded-xl bg-gradient-to-r from-brand-neonCyan to-teal-400 text-black font-black text-[11px] shadow-neon-cyan">Customize Big Mac (RM 17.50)</button>`
+        );
+      } else if (query.includes('movie') || query.includes('combo')) {
+        appendAIMessage('ai', "The <strong>Weekend Movie Night Box</strong> is our top evening crowd-pleaser! 9 McNuggets, 2 Milo Dinosaurs, 2 Fries & 2 Apple Pies.",
+          `<button onclick="openCustomizer(401); toggleAIAssistant();" class="mt-2 w-full py-1.5 rounded-xl bg-gradient-to-r from-brand-neonCyan to-teal-400 text-black font-black text-[11px] shadow-neon-cyan">Add Movie Night Box (RM 32.90)</button>`
+        );
+      } else {
+        appendAIMessage('ai', `I can help you build your evening feast, apply coupons, or scan your VIP QR subscription pass. Would you like to check today's hot vouchers?`,
+          `<button onclick="toggleVoucherModal(); toggleAIAssistant();" class="mt-2 w-full py-1.5 rounded-xl bg-brand-gold text-black font-bold text-[10px]">Open Voucher Vault</button>`
+        );
+      }
+    }
+  </script>
+</body>
+</html>
