@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEONBITES Malaysia | Multi-Menu & Timeline Locked Kiosk (MYR)</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              gold: '#FFC72C',
+              crimson: '#DA291C',
+              neonCyan: '#00F0FF',
+              neonGreen: '#10B981',
+              darkBg: '#080B11'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Glossy Specular Glassmorphism */
+    .specular-glass {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.02) 100%), rgba(12, 17, 29, 0.82);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.45), 0 12px 32px 0 rgba(0, 0, 0, 0.6);
+    }
+    .specular-glass-card {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.01) 100%), rgba(15, 21, 36, 0.62);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.35), 0 8px 24px -4px rgba(0, 0, 0, 0.45);
+      transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .specular-glass-card:hover:not(.is-locked) {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.14) 0%, rgba(0, 240, 255, 0.06) 100%), rgba(20, 28, 48, 0.75);
+      border-color: rgba(0, 240, 255, 0.45);
+      transform: translateY(-4px);
+      box-shadow: inset 0 1px 2px 0 rgba(255, 255, 255, 0.6), 0 16px 36px -6px rgba(0, 240, 255, 0.25);
+    }
+    .is-locked {
+      background: rgba(10, 14, 23, 0.85) !important;
+      border-color: rgba(239, 68, 68, 0.25) !important;
+      filter: grayscale(45%);
+    }
+    .glow-gold-rim { box-shadow: 0 0 20px rgba(255, 199, 44, 0.3), inset 0 0 10px rgba(255, 199, 44, 0.2); }
+    .glow-cyan-rim { box-shadow: 0 0 20px rgba(0, 240, 255, 0.25), inset 0 0 10px rgba(0, 240, 255, 0.2); }
+    .glow-amber-alert { box-shadow: 0 0 24px rgba(245, 158, 11, 0.35); }
+    .glow-red-lock { box-shadow: 0 0 24px rgba(239, 68, 68, 0.3); }
+  </style>
+</head>
+<body class="bg-[#080B11] text-slate-100 min-h-screen relative overflow-x-hidden selection:bg-brand-gold selection:text-black">
+
+  <!-- Ambient Light Orbs -->
+  <div id="ambientOrb1" class="fixed top-[-10%] left-[-10%] w-[550px] h-[550px] rounded-full bg-brand-gold/20 blur-[150px] pointer-events-none -z-10 transition-all duration-700"></div>
+  <div id="ambientOrb2" class="fixed bottom-[-10%] right-[-5%] w-[650px] h-[650px] rounded-full bg-brand-crimson/15 blur-[160px] pointer-events-none -z-10 transition-all duration-700"></div>
+  <div class="fixed top-[40%] right-[20%] w-[450px] h-[450px] rounded-full bg-brand-neonCyan/10 blur-[150px] pointer-events-none -z-10"></div>
+
+  <!-- Header -->
+  <header class="sticky top-0 z-40 specular-glass border-b border-white/10 px-4 lg:px-8 py-3.5">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-3">
+      
+      <!-- Brand & Malaysian Status -->
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-crimson to-brand-gold flex items-center justify-center font-black text-2xl text-black shadow-lg shadow-brand-gold/20">
+            ⚡
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="font-black tracking-wider text-xl bg-gradient-to-r from-brand-gold via-yellow-100 to-amber-400 bg-clip-text text-transparent">NEONBITES</h1>
+              <span class="text-[10px] tracking-widest px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-400/30 text-emerald-300 font-mono font-bold">MYR (RM)</span>
+              <span id="shiftIndicatorBadge" class="text-[10px] tracking-widest px-2.5 py-0.5 rounded-full font-mono uppercase font-bold transition">☀️ 4AM-11AM Shift</span>
+            </div>
+            <p class="text-[11px] text-slate-400 hidden sm:block">Automated Timeline Lockouts • NEONBITES Membership</p>
+          </div>
+        </div>
+
+        <!-- Mobile Member & Cart triggers -->
+        <div class="flex md:hidden items-center gap-2">
+          <button onclick="toggleMemberModal()" class="px-2.5 py-1.5 rounded-xl specular-glass-card text-brand-gold text-xs font-bold flex items-center gap-1">
+            <span>⭐</span><span id="mobileMemberPoints">500</span>
+          </button>
+          <button onclick="toggleCartDrawer()" class="relative p-2 rounded-xl specular-glass-card text-slate-100">
+            🛍️ <span id="cartCountBadgeMobile" class="text-xs font-bold text-brand-gold">0</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Controls & Live Shift Selector -->
+      <div class="flex items-center flex-wrap gap-2.5">
+        
+        <!-- Live Shift Switcher with Real-time Clock -->
+        <div class="flex items-center bg-black/40 p-1 rounded-2xl border border-white/10 text-xs">
+          <span class="text-[10px] uppercase font-bold text-slate-400 px-2 flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            <span id="liveClockDisplay" class="font-mono text-white">08:00 AM</span>
+          </span>
+          <button onclick="setTimeShiftMode('morning')" id="shiftBtnMorning" class="px-3 py-1.5 rounded-xl font-bold text-[11px] transition">☀️ 4AM-11AM</button>
+          <button onclick="setTimeShiftMode('afternoon')" id="shiftBtnAfternoon" class="px-3 py-1.5 rounded-xl font-bold text-[11px] transition">🌙 11AM-4AM</button>
+          <button onclick="setTimeShiftMode('live')" id="shiftBtnLive" class="px-2.5 py-1.5 rounded-xl font-bold text-[11px] text-slate-400 hover:text-white transition">Auto</button>
+        </div>
+
+        <!-- NEONBITES Member Account Trigger -->
+        <button onclick="toggleMemberModal()" class="flex items-center gap-2 px-3.5 py-1.5 rounded-full specular-glass-card border border-brand-gold/40 text-brand-gold hover:bg-brand-gold/10 text-xs font-bold transition glow-gold-rim">
+          <span>🌟</span>
+          <span id="navMemberName">NEONBITES ACCOUNT</span>
+          <span id="navMemberPoints" class="px-2 py-0.5 rounded-full bg-brand-gold/20 text-[10px] font-mono">500 pts</span>
+        </button>
+
+        <!-- QuickBot AI Trigger -->
+        <button onclick="toggleAIAssistant()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full specular-glass-card border border-brand-neonCyan/40 text-brand-neonCyan hover:bg-brand-neonCyan/10 text-xs font-semibold transition glow-cyan-rim">
+          <span>🤖 QuickBot AI</span>
+        </button>
+
+        <!-- Order Tracker Pill -->
+        <button id="trackerHeaderBtn" onclick="toggleTrackerModal()" class="hidden items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-400/40 text-emerald-300 text-xs font-semibold">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>Order: <span id="headerTrackerStage" class="font-bold">Prep</span></span>
+        </button>
+
+        <!-- Desktop Cart -->
+        <button onclick="toggleCartDrawer()" class="hidden md:flex relative p-2.5 rounded-2xl specular-glass-card text-slate-100 hover:border-brand-gold/60 transition group">
+          <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+          </svg>
+          <span id="cartCountBadge" class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-brand-crimson text-white text-[11px] font-bold flex items-center justify-center border-2 border-[#080B11] scale-0 transition-transform">0</span>
+        </button>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- STEP-BY-STEP WORKFLOW STEPPER -->
+  <div class="bg-black/40 border-b border-white/10 px-4 py-2.5 overflow-x-auto scrollbar-none">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4 text-xs font-medium">
+      <div class="flex items-center gap-2 whitespace-nowrap">
+        <span class="w-6 h-6 rounded-full bg-brand-gold text-black font-extrabold flex items-center justify-center text-[11px]">1</span>
+        <span class="font-bold text-white">Step 1: Combo or Ala Carte</span>
+      </div>
+      <div class="h-0.5 w-8 bg-white/20 hidden sm:block"></div>
+      <div class="flex items-center gap-2 whitespace-nowrap text-slate-400">
+        <span class="w-6 h-6 rounded-full bg-white/10 text-white font-bold flex items-center justify-center text-[11px]">2</span>
+        <span>Step 2: Drink or Dessert</span>
+      </div>
+      <div class="h-0.5 w-8 bg-white/20 hidden sm:block"></div>
+      <div class="flex items-center gap-2 whitespace-nowrap text-slate-400">
+        <span class="w-6 h-6 rounded-full bg-white/10 text-white font-bold flex items-center justify-center text-[11px]">3</span>
+        <span>Step 3: Anything to Add On?</span>
+      </div>
+      <div class="h-0.5 w-8 bg-white/20 hidden sm:block"></div>
+      <div class="flex items-center gap-2 whitespace-nowrap text-slate-400">
+        <span class="w-6 h-6 rounded-full bg-white/10 text-white font-bold flex items-center justify-center text-[11px]">4</span>
+        <span>Step 4: Multiple Payments</span>
+      </div>
+      <div class="h-0.5 w-8 bg-white/20 hidden sm:block"></div>
+      <div class="flex items-center gap-2 whitespace-nowrap text-slate-400">
+        <span class="w-6 h-6 rounded-full bg-white/10 text-white font-bold flex items-center justify-center text-[11px]">5</span>
+        <span>Step 5: Live Tracker & Delays</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TIMELINE LOCKOUT STATUS BANNER -->
+  <div id="timelineLockoutNotice" class="bg-gradient-to-r from-red-950 via-slate-900 to-black border-b border-red-500/30 text-xs py-2.5 px-4 text-slate-300 flex items-center justify-between">
+    <div class="max-w-7xl mx-auto w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <span class="text-base">🔒</span>
+        <span><strong>Timeline Policy Active:</strong> Items outside current serving hours are strictly <strong>locked out</strong> from ordering.</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <span id="nextShiftCountdown" class="text-brand-gold font-mono font-bold">Unlocks in 02h 45m</span>
+        <button onclick="toggleShiftPreview()" class="text-[11px] underline text-brand-neonCyan hover:text-white">Switch Timeline View</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 lg:px-8 py-6 pb-28">
+
+    <!-- Hero Announcement -->
+    <section id="heroBanner" class="specular-glass rounded-3xl p-6 sm:p-8 mb-8 relative overflow-hidden border border-white/15 transition-all duration-500">
+      <div id="heroEmoji" class="absolute -right-8 -bottom-8 opacity-15 pointer-events-none text-9xl">🍔</div>
+      <div class="relative z-10 max-w-2xl">
+        <div id="heroTag" class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-gold/20 border border-brand-gold/40 text-brand-gold font-mono text-xs uppercase font-bold tracking-wider mb-3">
+          ⚡ 100% Halal Verified • Under 180s Dispatch
+        </div>
+        <h2 id="heroTitle" class="text-3xl sm:text-4xl font-black tracking-tight text-white mb-2 leading-tight">
+          Piping Hot Breakfast! <br/>
+          <span class="bg-gradient-to-r from-brand-gold via-yellow-200 to-amber-400 bg-clip-text text-transparent">Breakfast McValue & McCafé.</span>
+        </h2>
+        <p id="heroDesc" class="text-slate-300 text-sm mb-6">
+          Order signature Nasi Lemak McD, Sausage McMuffins, Hotcakes, or browse the locked evening menu.
+        </p>
+
+        <div id="heroButtons" class="flex flex-wrap gap-3"></div>
+      </div>
+    </section>
+
+    <!-- Category Tabs Navigation -->
+    <div class="flex items-center justify-between gap-4 mb-6">
+      <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none w-full max-w-4xl" id="categoryTabs"></div>
+      <div class="relative hidden md:block w-64">
+        <input type="text" id="menuSearch" oninput="handleSearch(this.value)" placeholder="Search meals, congee, wraps..." class="w-full specular-glass-card rounded-xl px-4 py-2 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-brand-neonCyan border border-white/10" />
+        <span class="absolute right-3 top-2.5 text-slate-400 text-xs">🔍</span>
+      </div>
+    </div>
+
+    <!-- Active Menu Items Grid (Includes Locked Out Cards) -->
+    <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"></div>
+
+  </main>
+
+  <!-- ================= NEONBITES MEMBERSHIP MODAL & QR CODE ================= -->
+  <div id="memberModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="specular-glass w-full max-w-xl rounded-3xl p-6 sm:p-8 border border-white/20 relative shadow-2xl">
+      <button onclick="toggleMemberModal()" class="absolute right-4 top-4 text-slate-400 hover:text-white text-lg">✕</button>
+
+      <div class="flex gap-2 border-b border-white/10 pb-4 mb-6">
+        <button onclick="switchMemberTab('card')" id="memberTabBtnCard" class="px-4 py-2 rounded-xl text-xs font-bold bg-brand-gold text-black shadow transition">
+          💳 Digital Member Card & QR
+        </button>
+        <button onclick="switchMemberTab('rewards')" id="memberTabBtnRewards" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-300 hover:text-white transition">
+          🎁 Rewards Catalog
+        </button>
+        <button onclick="switchMemberTab('register')" id="memberTabBtnRegister" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-300 hover:text-white transition">
+          📝 Profile / Register
+        </button>
+      </div>
+
+      <!-- Tab 1: Card & QR Code -->
+      <div id="memberTabContentCard">
+        <div class="bg-gradient-to-tr from-slate-900 via-indigo-950 to-slate-900 border border-brand-gold/40 rounded-3xl p-6 relative overflow-hidden shadow-2xl glow-gold-rim mb-6">
+          <div class="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-brand-gold/20 blur-2xl pointer-events-none"></div>
+
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-2">
+              <span class="text-2xl">⚡</span>
+              <div>
+                <h4 class="font-black text-sm text-white tracking-widest">NEONBITES PASSPORT</h4>
+                <p class="text-[10px] text-brand-gold font-mono uppercase">Tier: Cyber Gold Member</p>
+              </div>
+            </div>
+            <span class="text-xs bg-emerald-500/20 text-emerald-300 px-2.5 py-1 rounded-full border border-emerald-400/30 font-mono font-bold">Active Member</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center pt-2">
+            <div>
+              <p class="text-[10px] text-slate-400 uppercase font-mono">Member Name</p>
+              <h3 id="cardHolderName" class="text-lg font-black text-white">Alex Wong (MY)</h3>
+              <p class="text-[11px] text-slate-400 font-mono mt-0.5">ID: <span id="cardMemberId" class="text-slate-200">#NB-8829-MY</span></p>
+
+              <div class="mt-4">
+                <p class="text-[10px] text-slate-400 uppercase font-mono">Point Balance</p>
+                <div class="flex items-baseline gap-1.5">
+                  <span id="cardPointsCount" class="text-3xl font-black font-mono text-brand-gold">500</span>
+                  <span class="text-xs text-brand-gold font-bold">NeonPoints</span>
+                </div>
+                <p class="text-[10px] text-emerald-400 mt-0.5 font-medium">Earn RM 1 = 10 pts automatically</p>
+              </div>
+            </div>
+
+            <!-- Scannable Points QR Code -->
+            <div class="flex flex-col items-center justify-center bg-white p-3.5 rounded-2xl shadow-inner text-black">
+              <svg class="w-32 h-32" viewBox="0 0 100 100" fill="currentColor">
+                <rect x="0" y="0" width="30" height="30" rx="4" fill="#080B11"/>
+                <rect x="5" y="5" width="20" height="20" rx="2" fill="#fff"/>
+                <rect x="9" y="9" width="12" height="12" rx="1" fill="#080B11"/>
+                <rect x="70" y="0" width="30" height="30" rx="4" fill="#080B11"/>
+                <rect x="75" y="5" width="20" height="20" rx="2" fill="#fff"/>
+                <rect x="79" y="9" width="12" height="12" rx="1" fill="#080B11"/>
+                <rect x="0" y="70" width="30" height="30" rx="4" fill="#080B11"/>
+                <rect x="5" y="75" width="20" height="20" rx="2" fill="#fff"/>
+                <rect x="9" y="79" width="12" height="12" rx="1" fill="#080B11"/>
+                <rect x="36" y="6" width="6" height="6" fill="#080B11"/>
+                <rect x="48" y="10" width="8" height="6" fill="#080B11"/>
+                <rect x="42" y="38" width="16" height="16" rx="2" fill="#DA291C"/>
+                <rect x="66" y="40" width="6" height="8" fill="#080B11"/>
+                <rect x="80" y="44" width="12" height="6" fill="#080B11"/>
+                <rect x="38" y="62" width="8" height="8" fill="#080B11"/>
+                <rect x="52" y="68" width="6" height="10" fill="#080B11"/>
+                <rect x="70" y="64" width="8" height="6" fill="#080B11"/>
+                <rect x="84" y="76" width="8" height="12" fill="#080B11"/>
+              </svg>
+              <button onclick="simulateQrScanAtKiosk()" class="mt-2 text-[10px] font-mono font-bold bg-slate-900 text-white px-2.5 py-1 rounded-lg hover:bg-black transition active:scale-95">
+                📱 Scan QR at Counter (+50 pts)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <p class="text-xs text-center text-slate-400">Scan this QR code at checkout to earn points and claim birthday perks!</p>
+      </div>
+
+      <!-- Tab 2: Rewards Catalog -->
+      <div id="memberTabContentRewards" class="hidden space-y-3">
+        <div class="flex items-center justify-between text-xs text-slate-300 pb-2 border-b border-white/10">
+          <span>Your Points: <strong id="rewardTabPoints" class="text-brand-gold font-mono text-sm">500 pts</strong></span>
+          <span class="text-emerald-400">Instant Redemption</span>
+        </div>
+        <div class="space-y-2.5 max-h-72 overflow-y-auto pr-1">
+          <div class="specular-glass-card p-3 rounded-2xl flex items-center justify-between gap-3 border border-white/10">
+            <span class="text-2xl">🍟</span>
+            <div class="flex-1 min-w-0">
+              <h5 class="text-xs font-bold text-white">Free Medium Golden Fries</h5>
+              <p class="text-[10px] text-slate-400">Redeemable on any order</p>
+            </div>
+            <button onclick="redeemReward('Free Medium Golden Fries', 200)" class="px-3 py-1.5 rounded-xl bg-brand-gold text-black font-bold text-xs hover:brightness-110 active:scale-95">200 pts</button>
+          </div>
+          <div class="specular-glass-card p-3 rounded-2xl flex items-center justify-between gap-3 border border-white/10">
+            <span class="text-2xl">🍦</span>
+            <div class="flex-1 min-w-0">
+              <h5 class="text-xs font-bold text-white">Free Oreo® McFlurry®</h5>
+              <p class="text-[10px] text-slate-400">Vanilla soft serve with crushed cookies</p>
+            </div>
+            <button onclick="redeemReward('Free Oreo McFlurry', 350)" class="px-3 py-1.5 rounded-xl bg-brand-gold text-black font-bold text-xs hover:brightness-110 active:scale-95">350 pts</button>
+          </div>
+          <div class="specular-glass-card p-3 rounded-2xl flex items-center justify-between gap-3 border border-white/10">
+            <span class="text-2xl">🍗</span>
+            <div class="flex-1 min-w-0">
+              <h5 class="text-xs font-bold text-white">Free 1pc Ayam Goreng McD™</h5>
+              <p class="text-[10px] text-slate-400">Crispy spiced fried chicken</p>
+            </div>
+            <button onclick="redeemReward('Free 1pc Ayam Goreng', 450)" class="px-3 py-1.5 rounded-xl bg-brand-gold text-black font-bold text-xs hover:brightness-110 active:scale-95">450 pts</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 3: Sign Up / Profile -->
+      <div id="memberTabContentRegister" class="hidden">
+        <form onsubmit="handleMemberRegistration(event)" class="space-y-3.5">
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">Full Name</label>
+            <input type="text" id="regName" required value="Alex Wong" class="w-full specular-glass-card rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-gold border border-white/15" />
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-300 mb-1">Mobile (+60 Malaysia)</label>
+              <input type="tel" id="regPhone" required value="012-8839210" class="w-full specular-glass-card rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-gold border border-white/15" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-300 mb-1">Email</label>
+              <input type="email" id="regEmail" required value="alex.wong@gmail.com" class="w-full specular-glass-card rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-gold border border-white/15" />
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">Preferred Malaysian Branch</label>
+            <select id="regStore" class="w-full specular-glass-card rounded-xl px-3.5 py-2.5 text-xs text-white bg-slate-900 border border-white/15">
+              <option>Kuala Lumpur Central (KLCC)</option>
+              <option>Mid Valley Megamall Kiosk</option>
+              <option>Bukit Bintang Drive-Thru</option>
+              <option>Penang Gurney Paragon</option>
+              <option>Johor Bahru City Square</option>
+            </select>
+          </div>
+          <button type="submit" class="w-full mt-2 py-3.5 rounded-xl bg-gradient-to-r from-brand-gold to-amber-500 text-black font-black text-xs uppercase tracking-wider shadow-lg hover:brightness-110 active:scale-95 transition">
+            Save Profile & Claim +500 Welcome Bonus Points
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= STEP-BY-STEP CUSTOMIZER MODAL ================= -->
+  <div id="stepModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="specular-glass w-full max-w-xl rounded-3xl p-6 sm:p-8 border border-white/20 relative shadow-2xl max-h-[90vh] overflow-y-auto">
+      <button onclick="closeStepModal()" class="absolute right-4 top-4 text-slate-400 hover:text-white text-lg">✕</button>
+
+      <div class="flex items-center justify-between pb-4 mb-4 border-b border-white/10 text-xs">
+        <div>
+          <span class="text-[10px] font-mono text-brand-gold font-bold uppercase tracking-wider">Step-by-Step Order Wizard</span>
+          <h3 id="stepModalTitle" class="text-lg font-black text-white">Item</h3>
+        </div>
+        <div class="text-right">
+          <span class="text-[10px] text-slate-400 font-mono">Current Total</span>
+          <div id="stepRunningPrice" class="text-lg font-black font-mono text-brand-gold">RM 17.50</div>
+        </div>
+      </div>
+
+      <div class="space-y-6">
+
+        <!-- Step 1: Combo vs Ala Carte -->
+        <div class="specular-glass-card p-4 rounded-2xl border border-white/10">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="w-6 h-6 rounded-full bg-brand-gold text-black font-extrabold flex items-center justify-center text-xs">1</span>
+            <h4 class="font-bold text-sm text-white">Step 1: Choose Combo or Ala Carte</h4>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <button type="button" onclick="setStepMealType('combo')" id="stepBtnCombo" class="p-3 rounded-xl border border-brand-gold bg-brand-gold/20 text-left transition">
+              <span class="text-xs font-extrabold text-white block">🍟 Value Combo Meal</span>
+              <span class="text-[11px] text-brand-gold font-mono block mt-1">+ Drink & Golden Fries</span>
+              <span class="text-[10px] text-emerald-400 font-semibold mt-1 block">Full Meal Included</span>
+            </button>
+            <button type="button" onclick="setStepMealType('alacarte')" id="stepBtnAlaCarte" class="p-3 rounded-xl border border-white/10 text-left transition hover:border-white/30">
+              <span class="text-xs font-extrabold text-white block">🍔 Ala Carte Only</span>
+              <span class="text-[11px] text-slate-400 font-mono block mt-1">Single Item Only</span>
+              <span class="text-[10px] text-slate-400 font-semibold mt-1 block">- RM 4.50 off</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 2: Drink or Dessert -->
+        <div class="specular-glass-card p-4 rounded-2xl border border-white/10">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-brand-gold text-black font-extrabold flex items-center justify-center text-xs">2</span>
+              <h4 class="font-bold text-sm text-white">Step 2: Choose Drink or Dessert</h4>
+            </div>
+            <span class="text-[10px] text-brand-gold font-mono uppercase">1 Included</span>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5" id="stepDrinkDessertGrid"></div>
+        </div>
+
+        <!-- Step 3: Anything to Add On? -->
+        <div class="specular-glass-card p-4 rounded-2xl border border-white/10">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-brand-gold text-black font-extrabold flex items-center justify-center text-xs">3</span>
+              <h4 class="font-bold text-sm text-white">Step 3: Anything to Add On?</h4>
+            </div>
+            <span class="text-[10px] text-slate-400 font-mono">Optional Add-ons</span>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5" id="stepAddonsGrid"></div>
+        </div>
+
+      </div>
+
+      <!-- Footer -->
+      <div class="pt-6 mt-6 border-t border-white/10 flex items-center justify-between gap-4">
+        <button onclick="closeStepModal()" class="px-4 py-3 rounded-xl specular-glass-card text-xs text-slate-300 hover:text-white">
+          Cancel
+        </button>
+        <button onclick="commitStepItemToCart()" class="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-brand-gold to-amber-500 text-black font-black text-xs uppercase tracking-wider shadow-lg shadow-brand-gold/30 hover:brightness-110 active:scale-95 transition flex items-center justify-center gap-2">
+          <span>Add to Tray & Proceed</span>
+          <span id="stepCommitTotal" class="bg-black/20 px-2 py-0.5 rounded font-mono">RM 17.50</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TRAY DRAWER -->
+  <div id="cartDrawer" class="fixed inset-y-0 right-0 w-full sm:w-[420px] z-50 specular-glass border-l border-white/15 transform translate-x-full transition-transform duration-300 ease-out flex flex-col shadow-2xl">
+    <div class="p-4 border-b border-white/10 flex items-center justify-between bg-black/40">
+      <div class="flex items-center gap-2">
+        <span class="text-xl">🛍️</span>
+        <div>
+          <h3 class="font-bold text-sm text-white">Your Tray Summary</h3>
+          <span id="trayItemCount" class="text-[11px] text-brand-gold font-mono">0 items</span>
+        </div>
+      </div>
+      <button onclick="toggleCartDrawer()" class="text-slate-400 hover:text-white text-lg">✕</button>
+    </div>
+
+    <!-- Member Points Bar inside Cart -->
+    <div class="p-3 bg-brand-gold/10 border-b border-brand-gold/20 flex items-center justify-between text-xs">
+      <div class="flex items-center gap-2">
+        <span class="text-lg">⭐</span>
+        <div>
+          <span class="text-white font-bold block" id="cartMemberTag">Alex Wong</span>
+          <span class="text-[10px] text-slate-400">Balance: <span id="cartMemberPoints">500</span> pts</span>
+        </div>
+      </div>
+      <button onclick="toggleMemberModal()" class="px-2.5 py-1 rounded-lg specular-glass-card text-[11px] text-brand-gold font-bold">
+        QR Code
+      </button>
+    </div>
+
+    <div id="cartItemsList" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
+
+    <div class="p-4 border-t border-white/10 bg-black/40 space-y-3">
+      <div class="space-y-1.5 text-xs text-slate-400">
+        <div class="flex justify-between"><span>Subtotal</span><span id="cartSubtotal" class="font-mono text-white">RM 0.00</span></div>
+        <div class="flex justify-between"><span>Points Earned (+10/RM)</span><span id="cartPointsEarned" class="font-mono text-emerald-400 font-bold">+0 pts</span></div>
+        <div class="flex justify-between"><span>SST Tax (6%)</span><span id="cartTax" class="font-mono text-white">RM 0.00</span></div>
+        <div class="flex justify-between text-sm font-bold text-white pt-2 border-t border-white/10">
+          <span>Total (MYR)</span><span id="cartTotal" class="font-mono text-brand-gold text-base">RM 0.00</span>
+        </div>
+      </div>
+      <button onclick="openCheckoutModal()" id="checkoutBtn" disabled class="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-gold to-amber-500 text-black font-black text-xs uppercase tracking-wider shadow-lg shadow-brand-gold/30 hover:brightness-110 active:scale-95 transition disabled:opacity-40 disabled:cursor-not-allowed">
+        Proceed to Step 4: Billing ⚡
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= BILLING SECTION WITH MULTIPLE PAYMENT METHODS ================= -->
+  <div id="checkoutModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="specular-glass w-full max-w-md rounded-3xl p-6 border border-white/20 relative shadow-2xl">
+      <button onclick="closeCheckoutModal()" class="absolute right-4 top-4 text-slate-400 hover:text-white text-lg">✕</button>
+      
+      <div class="text-center mb-5">
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold uppercase tracking-wider mb-2">
+          <span>Step 4 of 5</span> • <span>💳 Billing & Payment</span>
+        </div>
+        <h3 class="font-extrabold text-lg text-white">Select Payment Method (MYR)</h3>
+        <p class="text-xs text-slate-400">Scan QR or choose your digital Malaysian payment</p>
+      </div>
+
+      <div class="bg-black/30 rounded-2xl p-4 border border-white/10 mb-4 space-y-2 text-xs">
+        <div class="flex justify-between text-slate-400"><span>NEONBITES Member Credit</span><span id="checkoutPointsCredit" class="text-emerald-400 font-bold">+180 pts</span></div>
+        <div class="flex justify-between text-sm font-bold text-white pt-2 border-t border-white/10"><span>Amount Payable</span><span id="checkoutModalTotal" class="font-mono text-brand-gold text-lg">RM 0.00</span></div>
+      </div>
+
+      <div class="space-y-2.5">
+        <button onclick="executeSimulatedPayment('DuitNow QR')" class="w-full py-3 rounded-xl bg-pink-600 hover:bg-pink-700 text-white font-bold text-xs transition flex items-center justify-center gap-2">
+          <span>📲 DuitNow QR Pay (Instant Bank / eWallet)</span>
+        </button>
+        <button onclick="executeSimulatedPayment('Touch n Go eWallet')" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition flex items-center justify-center gap-2">
+          <span>💳 Touch 'n Go eWallet</span>
+        </button>
+        <button onclick="executeSimulatedPayment('GrabPay')" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition flex items-center justify-center gap-2">
+          <span>🟢 GrabPay Wallet</span>
+        </button>
+        <button onclick="executeSimulatedPayment('FPX Online Banking')" class="w-full py-3 rounded-xl bg-yellow-400 hover:bg-yellow-500 text-black font-bold text-xs transition flex items-center justify-center gap-2">
+          <span>🏦 FPX Online Banking (Maybank2u / CIMB / Public Bank)</span>
+        </button>
+        <button onclick="executeSimulatedPayment('Credit / Debit Card')" class="w-full py-3 rounded-xl specular-glass-card border border-white/20 text-white font-bold text-xs hover:border-brand-gold transition flex items-center justify-center gap-2">
+          <span>💳 Visa / Mastercard / Apple Pay</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= REAL-TIME TRACKER WITH DELAY SIMULATOR ================= -->
+  <div id="trackerModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="specular-glass w-full max-w-xl rounded-3xl p-6 sm:p-8 border border-white/20 relative shadow-2xl">
+      <div class="flex items-center justify-between pb-4 border-b border-white/10">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+            <h3 class="text-lg font-black text-white">Step 5: Kitchen & Delivery Tracker</h3>
+          </div>
+          <p class="text-xs text-slate-400 font-mono">Order ID: <span id="trackerOrderId" class="text-brand-gold font-bold">#MY-7821</span></p>
+        </div>
+        <div class="flex items-center gap-1.5 bg-black/40 p-1 rounded-xl border border-white/10 text-xs">
+          <span class="text-[10px] text-slate-400 uppercase font-bold px-1">Speed:</span>
+          <button onclick="setSimulationSpeed(1)" id="spd1" class="px-2 py-0.5 rounded text-[11px] font-bold bg-white/20 text-white">1x</button>
+          <button onclick="setSimulationSpeed(4)" id="spd4" class="px-2 py-0.5 rounded text-[11px] font-bold text-slate-400">4x</button>
+          <button onclick="setSimulationSpeed(15)" id="spd15" class="px-2 py-0.5 rounded text-[11px] font-bold text-slate-400">Instant</button>
+        </div>
+      </div>
+
+      <!-- Real-time Delay Alert Banner -->
+      <div id="trackerDelayBanner" class="mt-4 p-3 rounded-2xl bg-amber-500/15 border border-amber-400/40 text-amber-300 text-xs flex items-center justify-between gap-3 glow-amber-alert hidden">
+        <div class="flex items-center gap-2.5">
+          <span class="text-xl">⚠️</span>
+          <div>
+            <strong class="block text-white" id="trackerDelayTitle">Cooking Rush Delay Detected (+40s)</strong>
+            <span class="text-[11px] text-amber-200" id="trackerDelayReason">Griddle queue experiencing weekend peak backlog.</span>
+          </div>
+        </div>
+        <button onclick="triggerSimulatedDelay()" class="text-[10px] px-2 py-1 rounded bg-amber-500/30 text-white hover:bg-amber-500/50">Inject Delay</button>
+      </div>
+
+      <div class="py-6 text-center">
+        <p class="text-xs uppercase tracking-widest text-slate-400 font-mono mb-1">Estimated Ready Time</p>
+        <div id="timerDisplay" class="text-5xl font-black font-mono text-brand-gold">02:45</div>
+        <p id="trackerStatusMessage" class="text-xs text-brand-neonCyan mt-2 font-medium">Buns toasting on high-velocity flat grill...</p>
+      </div>
+
+      <div class="relative py-4">
+        <div class="absolute top-1/2 left-4 right-4 h-1.5 bg-white/10 -translate-y-1/2 rounded-full overflow-hidden">
+          <div id="progressBar" class="h-full bg-gradient-to-r from-brand-gold to-emerald-400 w-[15%] transition-all duration-500"></div>
+        </div>
+        <div class="relative flex justify-between">
+          <div class="flex flex-col items-center">
+            <div id="stepDot1" class="w-9 h-9 rounded-full bg-brand-gold text-black font-bold flex items-center justify-center text-xs">🔥</div>
+            <span class="text-[10px] font-semibold text-white mt-2">Cooking Section</span>
+          </div>
+          <div class="flex flex-col items-center">
+            <div id="stepDot2" class="w-9 h-9 rounded-full bg-slate-800 text-slate-400 font-bold flex items-center justify-center text-xs border border-white/20">🍟</div>
+            <span class="text-[10px] font-semibold text-slate-400 mt-2">Process & Bagging</span>
+          </div>
+          <div class="flex flex-col items-center">
+            <div id="stepDot3" class="w-9 h-9 rounded-full bg-slate-800 text-slate-400 font-bold flex items-center justify-center text-xs border border-white/20">🛵</div>
+            <span class="text-[10px] font-semibold text-slate-400 mt-2">Delivery / Dispatch</span>
+          </div>
+          <div class="flex flex-col items-center">
+            <div id="stepDot4" class="w-9 h-9 rounded-full bg-slate-800 text-slate-400 font-bold flex items-center justify-center text-xs border border-white/20">🍔</div>
+            <span class="text-[10px] font-semibold text-slate-400 mt-2">Ready / Delivered</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 bg-black/30 rounded-2xl p-3 border border-white/10 flex items-center justify-between text-xs">
+        <span id="trackerItemSummary" class="text-white truncate max-w-[320px]">Order items</span>
+        <button onclick="toggleTrackerModal()" class="px-3 py-1.5 rounded-lg specular-glass-card text-slate-300">Minimize</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Assistant Drawer -->
+  <div id="aiModal" class="fixed inset-y-0 right-0 w-full sm:w-[420px] z-50 specular-glass border-l border-white/15 transform translate-x-full transition-transform duration-300 ease-out flex flex-col shadow-2xl">
+    <div class="p-4 border-b border-white/10 flex items-center justify-between bg-black/40">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-xl bg-brand-neonCyan/20 text-brand-neonCyan flex items-center justify-center font-bold text-base glow-cyan-rim">🤖</div>
+        <div>
+          <h3 class="font-bold text-sm text-white">QuickBot AI Assistant</h3>
+          <p class="text-[10px] text-brand-neonCyan font-mono">⚡ Kiosk & Timeline Agent • Online</p>
+        </div>
+      </div>
+      <button onclick="toggleAIAssistant()" class="text-slate-400 hover:text-white text-lg">✕</button>
+    </div>
+
+    <div id="aiChatMessages" class="flex-1 overflow-y-auto p-4 space-y-3 text-xs">
+      <div class="flex gap-2.5 items-start">
+        <span class="text-xl">🤖</span>
+        <div id="aiGreetingMsg" class="specular-glass-card p-3 rounded-2xl rounded-tl-none border-white/10 text-slate-200 leading-relaxed">
+          Selamat datang! Need help customizing an active menu item or checking locked serving windows? Tap a prompt below:
+        </div>
+      </div>
+    </div>
+
+    <div id="aiQuickPrompts" class="px-3 py-2 border-t border-white/10 bg-black/30 flex gap-1.5 overflow-x-auto text-[11px]"></div>
+
+    <form onsubmit="handleAISubmit(event)" class="p-3 border-t border-white/10 bg-black/50 flex gap-2">
+      <input type="text" id="aiInput" placeholder="e.g. 'Order Nasi Lemak McD with Milo Dinosaur'..." class="flex-1 specular-glass-card border border-white/15 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-brand-neonCyan" />
+      <button type="submit" class="px-3.5 py-2 rounded-xl bg-brand-neonCyan text-black font-bold text-xs glow-cyan-rim">Send</button>
+    </form>
+  </div>
+
+  <script>
+    // Audio synthesizer
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playBeep(type = 'add') {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      if (type === 'add') {
+        osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+      } else if (type === 'scan') {
+        osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+        osc.frequency.setValueAtTime(1760, audioCtx.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.18);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.18);
+      } else {
+        osc.frequency.setValueAtTime(523, audioCtx.currentTime);
+        osc.frequency.setValueAtTime(784, audioCtx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.35);
+      }
+    }
+
+    // NEONBITES MEMBERSHIP DATA
+    let memberData = {
+      name: 'Alex Wong',
+      id: '#NB-8829-MY',
+      phone: '012-8839210',
+      email: 'alex.wong@gmail.com',
+      store: 'Kuala Lumpur Central (KLCC)',
+      tier: 'Cyber Gold',
+      points: 500
+    };
+
+    // STEP 2 CATALOG: DRINKS OR DESSERTS
+    const STEP_DRINKS_DESSERTS = [
+      { id: 'coke', name: 'Coca-Cola (M)', price: 0, icon: '🥤' },
+      { id: 'icetea', name: 'Iced Lemon Tea', price: 0, icon: '🍋' },
+      { id: 'milo_dino', name: 'Iced Milo® Dinosaur', price: 2.50, icon: '🦕' },
+      { id: 'latte', name: 'McCafé® Iced Latte', price: 2.00, icon: '☕' },
+      { id: 'tehtarik', name: 'McCafé® Teh Tarik', price: 1.50, icon: '🧋' },
+      { id: 'mcflurry', name: 'Oreo® McFlurry®', price: 2.50, icon: '🍦' },
+      { id: 'durian_flurry', name: 'D24 Durian McFlurry®', price: 3.50, icon: '🍈' },
+      { id: 'sundae', name: 'Hot Fudge Sundae', price: 1.50, icon: '🍨' },
+      { id: 'pie', name: 'Warm Baked Apple Pie', price: 1.00, icon: '🥧' }
+    ];
+
+    // STEP 3 CATALOG: ANYTHING TO ADD ON?
+    const STEP_ADDONS = [
+      { id: 'loaded_fries', name: 'Cheesy Loaded Fries', price: 4.50, icon: '🧀' },
+      { id: 'extra_fries', name: 'Large Golden Fries', price: 3.50, icon: '🍟' },
+      { id: 'nuggets4', name: '4pcs McNuggets', price: 4.90, icon: '🍗' },
+      { id: 'chicken1pc', name: '1pc Ayam Goreng', price: 5.20, icon: '🍗' },
+      { id: 'hashbrown', name: 'Golden Hash Brown', price: 2.50, icon: '🥔' },
+      { id: 'sambal', name: 'Extra Sambal Tumis Pack', price: 1.20, icon: '🌶️' },
+      { id: 'dip_bbq', name: 'Extra BBQ Dip Cup', price: 1.00, icon: '🥫' }
+    ];
+
+    // ================= MASSIVE EXPANDED MENU CATALOG (35+ ITEMS) =================
+    const ALL_PRODUCTS = [
+      // ----------------- MORNING BREAKFAST SHIFT (4:00 AM - 11:00 AM) -----------------
+      { id: 101, name: 'Sausage McMuffin® with Egg', shift: 'morning', category: 'breakfast_muffins', basePrice: 7.50, comboPrice: 11.30, prepTime: '90s', badge: 'Morning Classic', image: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=700&q=80', desc: 'Savory sausage patty, freshly cracked egg, melted cheese on warm toasted English muffin.' },
+      { id: 102, name: 'Crispy Chicken Muffin', shift: 'morning', category: 'breakfast_muffins', basePrice: 8.50, comboPrice: 12.85, prepTime: '90s', badge: 'Crispy Morning', image: 'https://images.unsplash.com/photo-1586816001966-79b736744398?auto=format&fit=crop&w=700&q=80', desc: 'Crispy seasoned chicken patty with melted cheese and mayo on toasted English muffin.' },
+      { id: 103, name: 'Egg McMuffin® Classic', shift: 'morning', category: 'breakfast_muffins', basePrice: 7.00, comboPrice: 10.50, prepTime: '80s', badge: 'Egg & Chicken Roll', image: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=700&q=80', desc: 'Lean smoked chicken roll, freshly cracked egg, melted cheese on toasted English muffin.' },
+      { id: 104, name: 'Nasi Lemak McD™ (1pc Ayam Goreng)', shift: 'morning', category: 'breakfast_local', basePrice: 10.90, comboPrice: 14.50, prepTime: '100s', badge: 'Malaysian Favorite', image: 'https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?auto=format&fit=crop&w=700&q=80', desc: 'Fragrant coconut rice, spicy sambal tumis, crispy ikan bilis, cucumber slices, and 1pc Ayam Goreng.' },
+      { id: 105, name: 'Bubur Ayam McD™ (Savory Congee)', shift: 'morning', category: 'breakfast_local', basePrice: 6.50, comboPrice: 9.90, prepTime: '60s', badge: 'Comfort Rice', image: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=700&q=80', desc: 'Warm savory porridge topped with shredded chicken strips, fried shallots, sliced ginger, and chilies.' },
+      { id: 106, name: 'Scrambled Egg Wrap w/ Hash Brown & Sausage', shift: 'morning', category: 'breakfast_wraps', basePrice: 9.50, comboPrice: 13.50, prepTime: '90s', badge: 'Signature Wrap', image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=700&q=80', desc: 'Fluffy scrambled eggs, sausage patty, and a whole crispy hash brown wrapped in warm tortilla.' },
+      { id: 107, name: 'Scrambled Egg Wrap w/ Crispy Chicken', shift: 'morning', category: 'breakfast_wraps', basePrice: 9.50, comboPrice: 13.50, prepTime: '90s', badge: 'Hearty Breakfast', image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=700&q=80', desc: 'Fluffy scrambled eggs, crispy golden chicken strips, and a hash brown in a toasted wrap.' },
+      { id: 108, name: 'Fluffy 2pcs Hotcakes w/ Butter & Syrup', shift: 'morning', category: 'breakfast_platters', basePrice: 7.50, comboPrice: 11.50, prepTime: '70s', badge: 'Golden Maple', image: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?auto=format&fit=crop&w=700&q=80', desc: 'Two golden fluffy pancakes served with real whipped salted butter and sweet maple syrup.' },
+      { id: 109, name: 'Big Breakfast™ Supreme Platter', shift: 'morning', category: 'breakfast_platters', basePrice: 10.50, comboPrice: 14.65, prepTime: '120s', badge: 'Full Morning', image: 'https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?auto=format&fit=crop&w=700&q=80', desc: 'Warm toasted English muffin, savory sausage patty, scrambled eggs, and golden crispy hashbrown.' },
+      { id: 110, name: 'Cheesy Hash Brown Omelette Stack', shift: 'morning', category: 'breakfast_platters', basePrice: 8.90, comboPrice: 12.90, prepTime: '80s', badge: 'Crispy Stacker', image: 'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?auto=format&fit=crop&w=700&q=80', desc: 'Two crispy golden hashbrowns layered with fluffy folded omelette and melted American cheese.' },
+
+      // ----------------- AFTERNOON & LATE-NIGHT SHIFT (11:00 AM - 4:00 AM) -----------------
+      { id: 1, name: 'The Big Mac®', shift: 'afternoon', category: 'super_value', basePrice: 13.00, comboPrice: 17.50, prepTime: '150s', badge: 'Iconic Beef', image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=700&q=80', desc: 'Two 100% pure beef patties, special sauce, crisp lettuce, cheese, pickles, onions on sesame bun.' },
+      { id: 2, name: 'Double Big Mac® (4 Patties)', shift: 'afternoon', category: 'super_value', basePrice: 17.50, comboPrice: 21.90, prepTime: '160s', badge: 'Mega 4 Patties', image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=700&q=80', desc: 'Four 100% pure beef patties with extra special sauce, cheese, pickles, and shredded lettuce.' },
+      { id: 3, name: 'Triple Cheeseburger Deluxe', shift: 'afternoon', category: 'super_value', basePrice: 15.50, comboPrice: 19.90, prepTime: '130s', badge: 'Triple Beef', image: 'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?auto=format&fit=crop&w=700&q=80', desc: 'Three pure beef patties layered with three melted cheese slices, pickles, onions, ketchup, and mustard.' },
+      { id: 4, name: 'Quarter Pounder® with Cheese', shift: 'afternoon', category: 'super_value', basePrice: 14.50, comboPrice: 18.90, prepTime: '130s', badge: '100% Fresh Beef', image: 'https://images.unsplash.com/photo-1553979459-d2229ba7433b?auto=format&fit=crop&w=700&q=80', desc: 'Quarter pound 100% fresh beef patty, slivered onions, pickles, and two slices of melted cheese.' },
+      { id: 5, name: 'Filet-O-Fish® Supreme', shift: 'afternoon', category: 'super_value', basePrice: 10.40, comboPrice: 14.90, prepTime: '120s', badge: 'Wild Caught', image: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=700&q=80', desc: 'Crispy Alaskan pollock, tartar sauce, cheese on soft steamed bun.' },
+      { id: 6, name: 'Double Filet-O-Fish®', shift: 'afternoon', category: 'super_value', basePrice: 13.50, comboPrice: 17.50, prepTime: '120s', badge: 'Double Catch', image: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=700&q=80', desc: 'Two crispy wild-caught Alaskan pollock patties with double tartar sauce and melted cheese.' },
+      { id: 7, name: 'Sweet Chilli Fish Burger', shift: 'afternoon', category: 'super_value', basePrice: 11.50, comboPrice: 15.90, prepTime: '125s', badge: 'Sweet & Spicy', image: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=700&q=80', desc: 'Crispy golden fish fillet coated in sweet chili glaze with fresh shredded lettuce.' },
+      { id: 8, name: 'Ayam Goreng McD™ (2pcs)', shift: 'afternoon', category: 'chicken_feasts', basePrice: 13.45, comboPrice: 17.95, prepTime: '90s', badge: 'Extra Crispy', image: 'https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?auto=format&fit=crop&w=700&q=80', desc: 'Two pieces of piping hot, extra crispy spiced fried chicken (Spicy/Regular).' },
+      { id: 9, name: 'Ayam Goreng McD™ (3pcs)', shift: 'afternoon', category: 'chicken_feasts', basePrice: 19.50, comboPrice: 23.50, prepTime: '100s', badge: '3-Piece Feast', image: 'https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?auto=format&fit=crop&w=700&q=80', desc: 'Three big pieces of golden spiced fried chicken with fries and refreshing drink.' },
+      { id: 10, name: 'Ayam Goreng McD™ (5pcs Bucket)', shift: 'afternoon', category: 'chicken_feasts', basePrice: 29.90, comboPrice: 34.90, prepTime: '140s', badge: 'Party Sharing', image: 'https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?auto=format&fit=crop&w=700&q=80', desc: 'Five pieces of crispy fried chicken bucket served with 2 Large Fries and 2 Drinks.' },
+      { id: 11, name: 'Spicy Chicken McDeluxe™', shift: 'afternoon', category: 'chicken_feasts', basePrice: 13.00, comboPrice: 17.50, prepTime: '110s', badge: 'Signature Spice', image: 'https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?auto=format&fit=crop&w=700&q=80', desc: 'Crispy whole chicken thigh seasoned with spicy marinade, fresh lettuce, and special sauce.' },
+      { id: 12, name: 'GCB™ (Grilled Chicken Burger)', shift: 'afternoon', category: 'chicken_feasts', basePrice: 13.50, comboPrice: 17.90, prepTime: '120s', badge: 'Flame Grilled', image: 'https://images.unsplash.com/photo-1606755962773-d324e0a13086?auto=format&fit=crop&w=700&q=80', desc: 'Tender grilled chicken thigh patty basted in chargrilled BBQ glaze with fresh lettuce.' },
+      { id: 13, name: 'Chicken McNuggets® (9pcs)', shift: 'afternoon', category: 'chicken_feasts', basePrice: 12.50, comboPrice: 16.90, prepTime: '80s', badge: 'Tender Breast', image: 'https://images.unsplash.com/photo-1562967914-608f82629710?auto=format&fit=crop&w=700&q=80', desc: 'Nine tender tempura-battered chicken nuggets with Sweet & Sour and BBQ dips.' },
+      { id: 14, name: 'Chicken McNuggets® (20pcs Party Box)', shift: 'afternoon', category: 'chicken_feasts', basePrice: 24.90, comboPrice: 29.90, prepTime: '100s', badge: '20-Piece Box', image: 'https://images.unsplash.com/photo-1562967914-608f82629710?auto=format&fit=crop&w=700&q=80', desc: 'Twenty golden chicken nuggets with 4 signature dipping sauces.' },
+      { id: 15, name: 'Angus Third Pounder - Deluxe', shift: 'afternoon', category: 'angus_wraps', basePrice: 19.90, comboPrice: 24.50, prepTime: '150s', badge: '100% Angus', image: 'https://images.unsplash.com/photo-1553979459-d2229ba7433b?auto=format&fit=crop&w=700&q=80', desc: 'Thick Angus beef patty, red onions, tomato, lettuce, and creamy mustard mayo.' },
+      { id: 16, name: 'Angus Third Pounder - Bacon & Cheese', shift: 'afternoon', category: 'angus_wraps', basePrice: 21.90, comboPrice: 26.50, prepTime: '150s', badge: '100% Angus', image: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=700&q=80', desc: 'Angus patty with beef bacon rashers, two melted cheese slices, and BBQ glaze.' },
+      { id: 17, name: 'Angus Third Pounder - Mushroom & Swiss', shift: 'afternoon', category: 'angus_wraps', basePrice: 21.90, comboPrice: 26.50, prepTime: '150s', badge: 'Gourmet Swiss', image: 'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?auto=format&fit=crop&w=700&q=80', desc: 'Angus beef patty with sauteed savory mushrooms and melted Swiss cheese.' },
+      { id: 18, name: 'Sweet Chili Signature McWrap®', shift: 'afternoon', category: 'angus_wraps', basePrice: 11.40, comboPrice: 15.90, prepTime: '100s', badge: 'Signature Wrap', image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=700&q=80', desc: 'Tender chicken strips, cucumber, greens, and sweet chili sauce in a warm tortilla.' },
+      { id: 19, name: 'Chicken & Bacon Signature McWrap®', shift: 'afternoon', category: 'angus_wraps', basePrice: 12.40, comboPrice: 16.90, prepTime: '100s', badge: 'Savory Wrap', image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=700&q=80', desc: 'Crispy chicken breast, beef bacon crumbles, lettuce, and garlic aioli in a grilled tortilla.' },
+      { id: 20, name: 'Nasi Lemak McD™ (2pcs Ayam Goreng Combo)', shift: 'afternoon', category: 'angus_wraps', basePrice: 14.50, comboPrice: 18.90, prepTime: '110s', badge: 'All-Day Staple', image: 'https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?auto=format&fit=crop&w=700&q=80', desc: 'Aromatic coconut santan rice with spicy sambal tumis, hard boiled egg, cucumber, and 2pcs Ayam Goreng.' }
+    ];
+
+    // SHIFT CONFIGURATIONS
+    const SHIFT_CONFIG = {
+      morning: {
+        id: 'morning',
+        timeWindow: '4:00 AM – 11:00 AM',
+        badgeText: '☀️ 4AM-11AM Breakfast Menu',
+        heroTag: 'Step 1 • Breakfast McValue (4:00 AM - 11:00 AM) • MYR',
+        heroTitle: 'Rise & Sizzle! <br/><span class="bg-gradient-to-r from-brand-gold via-yellow-100 to-amber-400 bg-clip-text text-transparent">Breakfast McValue & Fresh McCafé.</span>',
+        heroDesc: 'Sausage McMuffins with Egg, Nasi Lemak McD, Bubur Ayam Congee, and Hotcakes. Afternoon grill is locked until 11:00 AM!',
+        heroEmoji: '🥞',
+        heroButtons: [
+          { text: '⚡ Sausage McMuffin Meal (RM 11.30)', id: 101, primary: true },
+          { text: '🍛 Nasi Lemak McD Combo (RM 14.50)', id: 104, primary: false }
+        ],
+        categories: [
+          { id: 'all', name: '⚡ All Items (Active + Locked)' },
+          { id: 'breakfast_muffins', name: 'McMuffins & Brioche' },
+          { id: 'breakfast_local', name: 'Local Breakfast & Congee' },
+          { id: 'breakfast_wraps', name: 'Scrambled Egg Wraps' },
+          { id: 'breakfast_platters', name: 'Hotcakes & Platters' }
+        ]
+      },
+      afternoon: {
+        id: 'afternoon',
+        timeWindow: '11:00 AM – 4:00 AM',
+        badgeText: '🌙 11AM-4AM Super Value Menu',
+        heroTag: 'Step 1 • Super Value & Sandwiches (11:00 AM - 4:00 AM) • MYR',
+        heroTitle: 'Grill Sizzling Hot! <br/><span class="bg-gradient-to-r from-brand-neonCyan via-teal-100 to-amber-300 bg-clip-text text-transparent">Super Value Meals & Ayam Goreng.</span>',
+        heroDesc: 'Big Macs, Double Filet-O-Fish, Ayam Goreng McD, Angus Third Pounders, and McWraps. Breakfast station locked until 4:00 AM.',
+        heroEmoji: '🍔',
+        heroButtons: [
+          { text: '⚡ Big Mac® Combo (RM 17.50)', id: 1, primary: true },
+          { text: '🍗 Ayam Goreng 2pcs Combo (RM 17.95)', id: 8, primary: false }
+        ],
+        categories: [
+          { id: 'all', name: '⚡ All Items (Active + Locked)' },
+          { id: 'super_value', name: 'Super Value Meals' },
+          { id: 'chicken_feasts', name: 'Ayam Goreng & Chicken' },
+          { id: 'angus_wraps', name: 'Angus Beef & McWraps' }
+        ]
+      }
+    };
+
+    // State Variables
+    let activeShiftMode = 'morning'; // 'morning' | 'afternoon'
+    let isAutoClock = false;
+    let currentCategory = 'all';
+    let searchQuery = '';
+    let cart = [];
+    let activeOrder = null;
+    let simulationInterval = null;
+    let simulationSpeed = 1;
+
+    // Active Step-by-Step State
+    let currentStepItem = null;
+    let stepMealType = 'combo';
+    let stepSelectedDrinkDessert = STEP_DRINKS_DESSERTS[0];
+    let stepSelectedAddons = [];
+
+    function detectRealClockShift() {
+      const hour = new Date().getHours();
+      return (hour >= 4 && hour < 11) ? 'morning' : 'afternoon';
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeShiftMode('morning');
+      startLiveClockTicker();
+      updateMemberUI();
+      updateCartDisplay();
+    });
+
+    function setTimeShiftMode(mode) {
+      if (mode === 'live') {
+        isAutoClock = true;
+        activeShiftMode = detectRealClockShift();
+      } else {
+        isAutoClock = false;
+        activeShiftMode = mode;
+      }
+      currentCategory = 'all';
+      updateShiftUI();
+    }
+
+    function toggleShiftPreview() {
+      setTimeShiftMode(activeShiftMode === 'morning' ? 'afternoon' : 'morning');
+    }
+
+    function startLiveClockTicker() {
+      setInterval(() => {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        document.getElementById('liveClockDisplay').textContent = isAutoClock ? `${timeStr} (Live)` : timeStr;
+
+        if (isAutoClock) {
+          const autoShift = detectRealClockShift();
+          if (autoShift !== activeShiftMode) {
+            activeShiftMode = autoShift;
+            updateShiftUI();
+          }
+        }
+      }, 1000);
+    }
+
+    function updateShiftUI() {
+      const config = SHIFT_CONFIG[activeShiftMode];
+
+      document.getElementById('shiftIndicatorBadge').textContent = config.badgeText;
+      document.getElementById('shiftBtnMorning').className = activeShiftMode === 'morning' && !isAutoClock
+        ? 'px-3 py-1.5 rounded-xl font-bold text-[11px] bg-brand-gold text-black shadow-md'
+        : 'px-3 py-1.5 rounded-xl font-bold text-[11px] text-slate-300 hover:text-white';
+
+      document.getElementById('shiftBtnAfternoon').className = activeShiftMode === 'afternoon' && !isAutoClock
+        ? 'px-3 py-1.5 rounded-xl font-bold text-[11px] bg-brand-neonCyan text-black shadow-md'
+        : 'px-3 py-1.5 rounded-xl font-bold text-[11px] text-slate-300 hover:text-white';
+
+      document.getElementById('shiftBtnLive').className = isAutoClock
+        ? 'px-2.5 py-1.5 rounded-xl font-bold text-[11px] bg-white/20 text-white'
+        : 'px-2.5 py-1.5 rounded-xl font-bold text-[11px] text-slate-400 hover:text-white';
+
+      document.getElementById('heroTag').innerHTML = config.heroTag;
+      document.getElementById('heroTitle').innerHTML = config.heroTitle;
+      document.getElementById('heroDesc').textContent = config.heroDesc;
+      document.getElementById('heroEmoji').textContent = config.heroEmoji;
+
+      document.getElementById('heroButtons').innerHTML = config.heroButtons.map(btn => `
+        <button onclick="launchStepOrdering(${btn.id})" class="px-5 py-2.5 rounded-xl ${
+          btn.primary 
+            ? 'bg-gradient-to-r from-brand-gold to-amber-500 text-black font-extrabold shadow-lg shadow-brand-gold/25 hover:brightness-110 active:scale-95' 
+            : 'specular-glass-card text-white hover:border-brand-neonCyan/40 font-semibold'
+        } text-xs transition flex items-center gap-2">
+          <span>${btn.text}</span>
+        </button>
+      `).join('');
+
+      document.getElementById('nextShiftCountdown').textContent = activeShiftMode === 'morning'
+        ? "Afternoon Grill unlocks at 11:00 AM"
+        : "Breakfast Station unlocks tomorrow at 04:00 AM";
+
+      renderCategoryTabs();
+      renderProducts();
+    }
+
+    function renderCategoryTabs() {
+      const config = SHIFT_CONFIG[activeShiftMode];
+      document.getElementById('categoryTabs').innerHTML = config.categories.map(cat => `
+        <button onclick="setCategory('${cat.id}')" class="px-4 py-2 rounded-2xl text-xs font-bold transition whitespace-nowrap ${
+          cat.id === currentCategory 
+            ? 'bg-brand-gold text-black shadow-md shadow-brand-gold/30' 
+            : 'specular-glass-card text-slate-300 hover:text-white'
+        }">${cat.name}</button>
+      `).join('');
+    }
+
+    function setCategory(id) {
+      currentCategory = id;
+      renderCategoryTabs();
+      renderProducts();
+    }
+
+    function handleSearch(val) {
+      searchQuery = val.toLowerCase().trim();
+      renderProducts();
+    }
+
+    // ================= TIMELINE LOCKOUT RENDERING =================
+    function renderProducts() {
+      const grid = document.getElementById('productGrid');
+
+      const filtered = ALL_PRODUCTS.filter(p => {
+        const matchesCategory = currentCategory === 'all' || p.category === currentCategory || p.shift === activeShiftMode;
+        const matchesSearch = p.name.toLowerCase().includes(searchQuery) || p.desc.toLowerCase().includes(searchQuery);
+        return matchesCategory && matchesSearch;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `<div class="col-span-full py-16 text-center text-slate-400"><p class="text-sm">No items found matching your search.</p></div>`;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(item => {
+        // Timeline check: is this product currently locked out?
+        const isLocked = item.shift !== activeShiftMode;
+        const lockServingWindow = item.shift === 'morning' ? '4:00 AM – 11:00 AM' : '11:00 AM – 4:00 AM';
+
+        return `
+          <div class="specular-glass-card rounded-3xl p-4 flex flex-col justify-between group overflow-hidden border ${
+            isLocked ? 'is-locked relative border-red-500/20' : 'border-white/10'
+          }">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-2.5">
+                <span class="text-[10px] font-mono tracking-wider uppercase px-2.5 py-0.5 rounded-full ${
+                  isLocked ? 'bg-red-500/20 text-red-400 border border-red-500/40 font-bold' : 'bg-brand-gold/15 text-brand-gold border border-brand-gold/30 font-bold'
+                }">${isLocked ? '🔒 TIMELINE LOCKED' : item.badge}</span>
+                <span class="text-[11px] font-mono text-slate-400">⏱️ ${item.prepTime}</span>
+              </div>
+
+              <!-- Product Image -->
+              <div class="w-full h-44 rounded-2xl overflow-hidden bg-black/40 mb-3.5 relative border border-white/10">
+                <img src="${item.image}" alt="${item.name}" loading="lazy" class="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500 ${isLocked ? 'opacity-40' : ''}" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+
+                <!-- Padlock Overlay for Locked Items -->
+                ${isLocked ? `
+                  <div class="absolute inset-0 flex flex-col items-center justify-center bg-black/60 p-4 text-center">
+                    <span class="text-3xl mb-1">🔒</span>
+                    <span class="text-xs font-black text-red-400 tracking-wider uppercase">Kitchen Station Closed</span>
+                    <span class="text-[10px] text-slate-300 mt-0.5 font-mono">Available ${lockServingWindow}</span>
+                  </div>
+                ` : ''}
+              </div>
+
+              <h3 class="font-extrabold text-white text-base group-hover:text-brand-gold transition-colors">${item.name}</h3>
+              <p class="text-xs text-slate-300 line-clamp-2 mt-1 mb-3 leading-relaxed">${item.desc}</p>
+            </div>
+
+            <div class="pt-3 border-t border-white/10 flex items-center justify-between">
+              <div>
+                <span class="text-[10px] text-slate-400 block font-mono">Combo From</span>
+                <span class="text-lg font-black font-mono text-brand-gold">RM ${item.comboPrice.toFixed(2)}</span>
+              </div>
+
+              <!-- Button locks out if outside serving hours -->
+              ${isLocked ? `
+                <button onclick="notifyItemLocked('${item.name}', '${lockServingWindow}')" class="px-3.5 py-2 rounded-xl bg-slate-800 text-slate-400 font-bold text-xs cursor-not-allowed border border-white/10 flex items-center gap-1.5">
+                  <span>🔒 Locked</span>
+                </button>
+              ` : `
+                <button onclick="launchStepOrdering(${item.id})" class="px-4 py-2 rounded-xl bg-brand-gold hover:bg-yellow-400 text-black font-extrabold text-xs active:scale-95 transition shadow-md shadow-brand-gold/20 flex items-center gap-1.5">
+                  <span>Order Step-by-Step ➔</span>
+                </button>
+              `}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function notifyItemLocked(itemName, windowTime) {
+      alert(`⏰ TIMELINE LOCKOUT: "${itemName}" is only prepared between ${windowTime}. The dedicated kitchen station is currently powered down. Please choose an active item or adjust the timeline toggle.`);
+    }
+
+    // ================= STEP-BY-STEP ORDERING WIZARD =================
+    function launchStepOrdering(productId) {
+      currentStepItem = ALL_PRODUCTS.find(p => p.id === productId);
+
+      // Guard check: cannot order locked items
+      if (currentStepItem.shift !== activeShiftMode) {
+        notifyItemLocked(currentStepItem.name, currentStepItem.shift === 'morning' ? '4:00 AM - 11:00 AM' : '11:00 AM - 4:00 AM');
+        return;
+      }
+
+      stepMealType = 'combo';
+      stepSelectedDrinkDessert = STEP_DRINKS_DESSERTS[0];
+      stepSelectedAddons = [];
+
+      document.getElementById('stepModalTitle').textContent = currentStepItem.name;
+      renderStepDrinkDessertGrid();
+      renderStepAddonsGrid();
+      updateStepPricePreview();
+
+      document.getElementById('stepModal').classList.remove('hidden');
+    }
+
+    function closeStepModal() {
+      document.getElementById('stepModal').classList.add('hidden');
+      currentStepItem = null;
+    }
+
+    function setStepMealType(type) {
+      stepMealType = type;
+      if (type === 'combo') {
+        document.getElementById('stepBtnCombo').className = "p-3 rounded-xl border border-brand-gold bg-brand-gold/20 text-left transition";
+        document.getElementById('stepBtnAlaCarte').className = "p-3 rounded-xl border border-white/10 text-left transition hover:border-white/30";
+      } else {
+        document.getElementById('stepBtnAlaCarte').className = "p-3 rounded-xl border border-brand-gold bg-brand-gold/20 text-left transition";
+        document.getElementById('stepBtnCombo').className = "p-3 rounded-xl border border-white/10 text-left transition hover:border-white/30";
+      }
+      updateStepPricePreview();
+    }
+
+    function renderStepDrinkDessertGrid() {
+      const container = document.getElementById('stepDrinkDessertGrid');
+      container.innerHTML = STEP_DRINKS_DESSERTS.map(item => {
+        const isSelected = stepSelectedDrinkDessert.id === item.id;
+        return `
+          <button type="button" onclick="selectStepDrinkDessert('${item.id}')" class="p-2.5 rounded-xl border text-center transition flex flex-col items-center justify-center ${
+            isSelected ? 'border-brand-gold bg-brand-gold/20 shadow glow-gold-rim' : 'border-white/10 hover:border-white/30'
+          }">
+            <span class="text-2xl mb-1">${item.icon}</span>
+            <span class="text-xs font-bold text-white leading-tight">${item.name}</span>
+            <span class="text-[10px] text-emerald-400 font-mono mt-0.5">${item.price > 0 ? '+RM ' + item.price.toFixed(2) : 'Included'}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectStepDrinkDessert(id) {
+      stepSelectedDrinkDessert = STEP_DRINKS_DESSERTS.find(d => d.id === id);
+      renderStepDrinkDessertGrid();
+      updateStepPricePreview();
+    }
+
+    function renderStepAddonsGrid() {
+      const container = document.getElementById('stepAddonsGrid');
+      container.innerHTML = STEP_ADDONS.map(addon => {
+        const isSelected = stepSelectedAddons.some(a => a.id === addon.id);
+        return `
+          <button type="button" onclick="toggleStepAddon('${addon.id}')" class="p-2.5 rounded-xl border text-center transition flex flex-col items-center justify-center ${
+            isSelected ? 'border-brand-neonCyan bg-brand-neonCyan/20 glow-cyan-rim' : 'border-white/10 hover:border-white/30'
+          }">
+            <span class="text-2xl mb-1">${addon.icon}</span>
+            <span class="text-xs font-bold text-white leading-tight">${addon.name}</span>
+            <span class="text-[10px] text-brand-gold font-mono mt-0.5">+RM ${addon.price.toFixed(2)}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function toggleStepAddon(id) {
+      const addon = STEP_ADDONS.find(a => a.id === id);
+      const exists = stepSelectedAddons.findIndex(a => a.id === id);
+      if (exists !== -1) {
+        stepSelectedAddons.splice(exists, 1);
+      } else {
+        stepSelectedAddons.push(addon);
+      }
+      renderStepAddonsGrid();
+      updateStepPricePreview();
+    }
+
+    function calculateStepPrice() {
+      if (!currentStepItem) return 0;
+      let total = stepMealType === 'combo' ? currentStepItem.comboPrice : currentStepItem.basePrice;
+      total += stepSelectedDrinkDessert.price;
+      stepSelectedAddons.forEach(a => total += a.price);
+      return total;
+    }
+
+    function updateStepPricePreview() {
+      const price = calculateStepPrice();
+      document.getElementById('stepRunningPrice').textContent = `RM ${price.toFixed(2)}`;
+      document.getElementById('stepCommitTotal').textContent = `RM ${price.toFixed(2)}`;
+    }
+
+    function commitStepItemToCart() {
+      if (!currentStepItem) return;
+      playBeep('add');
+
+      const configuredItem = {
+        cartKey: `${currentStepItem.id}_${stepMealType}_${stepSelectedDrinkDessert.id}_${stepSelectedAddons.map(a => a.id).join('-')}`,
+        product: currentStepItem,
+        mealType: stepMealType,
+        drinkDessert: stepSelectedDrinkDessert,
+        addons: [...stepSelectedAddons],
+        unitPrice: calculateStepPrice(),
+        qty: 1
+      };
+
+      const existing = cart.find(c => c.cartKey === configuredItem.cartKey);
+      if (existing) existing.qty++;
+      else cart.push(configuredItem);
+
+      closeStepModal();
+      updateCartDisplay();
+      toggleCartDrawer(true);
+    }
+
+    // ================= CART & TRAY SUMMARY =================
+    function changeCartItemQty(cartKey, delta) {
+      const idx = cart.findIndex(c => c.cartKey === cartKey);
+      if (idx !== -1) {
+        cart[idx].qty += delta;
+        if (cart[idx].qty <= 0) cart.splice(idx, 1);
+      }
+      updateCartDisplay();
+    }
+
+    function updateCartDisplay() {
+      const totalItems = cart.reduce((acc, c) => acc + c.qty, 0);
+      const subtotal = cart.reduce((acc, c) => acc + (c.unitPrice * c.qty), 0);
+      const sst = subtotal * 0.06;
+      const total = subtotal + sst;
+      const pointsToEarn = Math.floor(total * 10);
+
+      document.getElementById('cartCountBadge').textContent = totalItems;
+      document.getElementById('cartCountBadge').className = totalItems > 0 
+        ? document.getElementById('cartCountBadge').className.replace('scale-0', 'scale-100')
+        : document.getElementById('cartCountBadge').className.replace('scale-100', 'scale-0');
+
+      document.getElementById('cartCountBadgeMobile').textContent = totalItems;
+      document.getElementById('trayItemCount').textContent = `${totalItems} items`;
+      document.getElementById('cartSubtotal').textContent = `RM ${subtotal.toFixed(2)}`;
+      document.getElementById('cartPointsEarned').textContent = `+${pointsToEarn} pts`;
+      document.getElementById('checkoutPointsCredit').textContent = `+${pointsToEarn} pts`;
+      document.getElementById('cartTax').textContent = `RM ${sst.toFixed(2)}`;
+      document.getElementById('cartTotal').textContent = `RM ${total.toFixed(2)}`;
+      document.getElementById('checkoutModalTotal').textContent = `RM ${total.toFixed(2)}`;
+      document.getElementById('checkoutBtn').disabled = totalItems === 0;
+
+      const list = document.getElementById('cartItemsList');
+      if (cart.length === 0) {
+        list.innerHTML = `<div class="h-48 flex items-center justify-center text-xs text-slate-400">Tray is empty. Tap any active item to configure step-by-step!</div>`;
+        return;
+      }
+
+      list.innerHTML = cart.map(item => `
+        <div class="specular-glass-card p-3 rounded-2xl border border-white/10 flex items-center justify-between gap-3">
+          <img src="${item.product.image}" class="w-12 h-12 rounded-xl object-cover border border-white/10" />
+          <div class="flex-1 min-w-0">
+            <h4 class="text-xs font-bold text-white truncate">${item.product.name} (${item.mealType.toUpperCase()})</h4>
+            <p class="text-[10px] text-slate-400 truncate">🥤 ${item.drinkDessert.name}</p>
+            ${item.addons.length > 0 ? `<p class="text-[10px] text-brand-gold truncate">+ ${item.addons.map(a => a.name).join(', ')}</p>` : ''}
+            <div class="text-[11px] font-mono text-brand-gold mt-0.5">RM ${(item.unitPrice * item.qty).toFixed(2)}</div>
+          </div>
+          <div class="flex items-center gap-2 bg-black/40 px-2 py-1 rounded-xl border border-white/10">
+            <button onclick="changeCartItemQty('${item.cartKey}', -1)" class="text-xs px-1 text-slate-300">-</button>
+            <span class="text-xs font-mono text-white font-bold">${item.qty}</span>
+            <button onclick="changeCartItemQty('${item.cartKey}', 1)" class="text-xs px-1 text-slate-300">+</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function toggleCartDrawer(forceOpen = null) {
+      const drawer = document.getElementById('cartDrawer');
+      if (forceOpen === true || drawer.classList.contains('translate-x-full')) drawer.classList.remove('translate-x-full');
+      else drawer.classList.add('translate-x-full');
+    }
+
+    // ================= MEMBERSHIP & QR CODE ENGINE =================
+    function toggleMemberModal() { document.getElementById('memberModal').classList.toggle('hidden'); }
+
+    function switchMemberTab(tab) {
+      ['card', 'rewards', 'register'].forEach(t => {
+        document.getElementById(`memberTabContent${t.charAt(0).toUpperCase() + t.slice(1)}`).classList.add('hidden');
+        document.getElementById(`memberTabBtn${t.charAt(0).toUpperCase() + t.slice(1)}`).className = "px-4 py-2 rounded-xl text-xs font-bold text-slate-300 hover:text-white transition";
+      });
+      document.getElementById(`memberTabContent${tab.charAt(0).toUpperCase() + tab.slice(1)}`).classList.remove('hidden');
+      document.getElementById(`memberTabBtn${tab.charAt(0).toUpperCase() + tab.slice(1)}`).className = "px-4 py-2 rounded-xl text-xs font-bold bg-brand-gold text-black shadow transition";
+    }
+
+    function updateMemberUI() {
+      document.getElementById('navMemberName').textContent = memberData.name;
+      document.getElementById('navMemberPoints').textContent = `${memberData.points} pts`;
+      document.getElementById('mobileMemberPoints').textContent = memberData.points;
+      document.getElementById('cardHolderName').textContent = memberData.name;
+      document.getElementById('cardMemberId').textContent = memberData.id;
+      document.getElementById('cardPointsCount').textContent = memberData.points;
+      document.getElementById('rewardTabPoints').textContent = `${memberData.points} pts`;
+      document.getElementById('cartMemberTag').textContent = memberData.name;
+      document.getElementById('cartMemberPoints').textContent = memberData.points;
+    }
+
+    function simulateQrScanAtKiosk() {
+      playBeep('scan');
+      memberData.points += 50;
+      updateMemberUI();
+      alert(`🎉 QR Code Scanned at Kiosk! +50 NeonPoints credited to ${memberData.name}. Total points: ${memberData.points}`);
+    }
+
+    function redeemReward(name, cost) {
+      if (memberData.points < cost) {
+        alert("Not enough NeonPoints for this reward!");
+        return;
+      }
+      playBeep('scan');
+      memberData.points -= cost;
+      updateMemberUI();
+      alert(`🎁 Redeemed: ${name}! Added to your active passport perks.`);
+    }
+
+    function handleMemberRegistration(e) {
+      e.preventDefault();
+      memberData.name = document.getElementById('regName').value;
+      memberData.phone = document.getElementById('regPhone').value;
+      memberData.email = document.getElementById('regEmail').value;
+      memberData.store = document.getElementById('regStore').value;
+      memberData.points += 500;
+      updateMemberUI();
+      switchMemberTab('card');
+      playBeep('scan');
+      alert(`🎉 Welcome to NEONBITES, ${memberData.name}! 500 Welcome Points awarded.`);
+    }
+
+    // ================= BILLING & PAYMENT =================
+    function openCheckoutModal() { document.getElementById('checkoutModal').classList.remove('hidden'); }
+    function closeCheckoutModal() { document.getElementById('checkoutModal').classList.add('hidden'); }
+
+    function executeSimulatedPayment(method) {
+      closeCheckoutModal();
+      toggleCartDrawer(false);
+      playBeep('scan');
+
+      const subtotal = cart.reduce((acc, c) => acc + (c.unitPrice * c.qty), 0);
+      const pointsEarned = Math.floor((subtotal * 1.06) * 10);
+      memberData.points += pointsEarned;
+      updateMemberUI();
+
+      activeOrder = {
+        id: '#MY-' + Math.floor(1000 + Math.random() * 9000),
+        itemSummary: cart.map(c => `${c.product.name} (${c.mealType}) x${c.qty}`).join(', '),
+        totalSeconds: 160,
+        remainingSeconds: 160,
+        stage: 1,
+        hasDelayed: false
+      };
+
+      cart = [];
+      updateCartDisplay();
+
+      document.getElementById('trackerHeaderBtn').classList.remove('hidden');
+      document.getElementById('trackerHeaderBtn').classList.add('flex');
+      document.getElementById('trackerOrderId').textContent = activeOrder.id;
+      document.getElementById('trackerItemSummary').textContent = activeOrder.itemSummary;
+
+      toggleTrackerModal(true);
+      startSimulation();
+    }
+
+    // ================= TRACKER & DELAY SIMULATOR =================
+    function toggleTrackerModal(forceOpen = null) {
+      const m = document.getElementById('trackerModal');
+      if (forceOpen === true || m.classList.contains('hidden')) m.classList.remove('hidden');
+      else m.classList.add('hidden');
+    }
+
+    function setSimulationSpeed(spd) {
+      simulationSpeed = spd;
+      [1, 4, 15].forEach(s => {
+        const btn = document.getElementById(`spd${s}`);
+        btn.className = s === spd ? "px-2 py-0.5 rounded text-[11px] font-bold bg-white/20 text-white" : "px-2 py-0.5 rounded text-[11px] font-bold text-slate-400";
+      });
+    }
+
+    function triggerSimulatedDelay() {
+      if (!activeOrder) return;
+      activeOrder.remainingSeconds += 35;
+      activeOrder.totalSeconds += 35;
+      showDelayAlert("⚠️ Kitchen Backlog Delay", "Grill queue experiencing heavy peak volume (+35s added)");
+    }
+
+    function showDelayAlert(title, reason) {
+      const banner = document.getElementById('trackerDelayBanner');
+      document.getElementById('trackerDelayTitle').textContent = title;
+      document.getElementById('trackerDelayReason').textContent = reason;
+      banner.classList.remove('hidden');
+    }
+
+    function startSimulation() {
+      if (simulationInterval) clearInterval(simulationInterval);
+      document.getElementById('trackerDelayBanner').classList.add('hidden');
+
+      simulationInterval = setInterval(() => {
+        if (!activeOrder) return;
+
+        if (!activeOrder.hasDelayed && activeOrder.remainingSeconds < 120 && activeOrder.remainingSeconds > 90) {
+          activeOrder.hasDelayed = true;
+          activeOrder.remainingSeconds += 30;
+          activeOrder.totalSeconds += 30;
+          showDelayAlert("⚠️ Cooking Section Delay (+30s)", "Patties seared to perfection; high order queue on griddle #2.");
+        }
+
+        activeOrder.remainingSeconds -= 1 * simulationSpeed;
+        if (activeOrder.remainingSeconds <= 0) {
+          activeOrder.remainingSeconds = 0;
+          activeOrder.stage = 4;
+          updateTrackerUI();
+          clearInterval(simulationInterval);
+          playBeep('add');
+          return;
+        }
+
+        const progress = (activeOrder.totalSeconds - activeOrder.remainingSeconds) / activeOrder.totalSeconds;
+        activeOrder.stage = progress < 0.35 ? 1 : progress < 0.70 ? 2 : progress < 0.95 ? 3 : 4;
+        updateTrackerUI();
+      }, 1000);
+
+      updateTrackerUI();
+    }
+
+    function updateTrackerUI() {
+      const mins = Math.floor(activeOrder.remainingSeconds / 60);
+      const secs = Math.floor(activeOrder.remainingSeconds % 60);
+      document.getElementById('timerDisplay').textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+      const percent = Math.min(100, Math.round(((activeOrder.totalSeconds - activeOrder.remainingSeconds) / activeOrder.totalSeconds) * 100));
+      document.getElementById('progressBar').style.width = `${percent}%`;
+
+      const msgs = { 
+        1: "Cooking Section: Sizzling pure beef patties on flat grill...", 
+        2: "Process & Bagging: Salting fries, sealing cups & quality packing...", 
+        3: "Delivery / Dispatch Section: Handed over to rider. (Traffic delay buffer active)...", 
+        4: "Order Ready! Please collect at Counter #3 or receive delivery." 
+      };
+      const stages = { 1: "Cooking", 2: "Process", 3: "Delivery", 4: "Ready" };
+      document.getElementById('trackerStatusMessage').textContent = msgs[activeOrder.stage];
+      document.getElementById('headerTrackerStage').textContent = stages[activeOrder.stage];
+
+      for (let i = 1; i <= 4; i++) {
+        const dot = document.getElementById(`stepDot${i}`);
+        if (i < activeOrder.stage) {
+          dot.className = "w-9 h-9 rounded-full bg-emerald-500 text-black font-bold flex items-center justify-center text-xs";
+          dot.innerHTML = "✓";
+        } else if (i === activeOrder.stage) {
+          dot.className = "w-9 h-9 rounded-full bg-brand-gold text-black font-bold flex items-center justify-center text-xs animate-pulse";
+        } else {
+          dot.className = "w-9 h-9 rounded-full bg-slate-800 text-slate-500 font-bold flex items-center justify-center text-xs border border-white/20";
+        }
+      }
+    }
+
+    // AI Assistant
+    function toggleAIAssistant() { document.getElementById('aiModal').classList.toggle('translate-x-full'); }
+    function sendQuickPrompt(t) { document.getElementById('aiInput').value = t; handleAISubmit(new Event('submit')); }
+    function handleAISubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('aiInput');
+      const val = input.value.trim();
+      if (!val) return;
+      appendAIMessage('user', val);
+      input.value = '';
+      setTimeout(() => {
+        appendAIMessage('ai', `I can help customize this step by step! Launching Nasi Lemak McD™ with Iced Milo® Dinosaur.`, 104);
+      }, 500);
+    }
+    function appendAIMessage(sender, text, triggerId = null) {
+      const container = document.getElementById('aiChatMessages');
+      const div = document.createElement('div');
+      div.className = `flex gap-2.5 items-start ${sender === 'user' ? 'justify-end' : ''}`;
+      if (sender === 'ai') {
+        div.innerHTML = `
+          <span class="text-xl">🤖</span>
+          <div class="specular-glass-card p-3 rounded-2xl rounded-tl-none border-white/10 text-slate-200 leading-relaxed max-w-[85%]">
+            <p>${text}</p>
+            ${triggerId ? `<button onclick="launchStepOrdering(${triggerId}); toggleAIAssistant();" class="mt-2.5 w-full py-1.5 px-3 rounded-xl bg-brand-neonCyan text-black font-extrabold text-[11px] glow-cyan-rim">⚡ Customize Step-by-Step</button>` : ''}
+          </div>
+        `;
+      } else {
+        div.innerHTML = `<div class="bg-brand-neonCyan/20 border border-brand-neonCyan/40 p-3 rounded-2xl rounded-tr-none text-white max-w-[85%]">${text}</div>`;
+      }
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
+    }
+  </script>
+</body>
+</html>
